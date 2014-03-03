@@ -26,10 +26,13 @@ console.log(numConnected + ' connected');
     		console.log('User ' + name + ' connected');
 
     		//adds user to the user array
-    		usersList.push(name);
 
-	    	socket.broadcast.emit('userConnected', {username : name});
+    		console.log("User " + name);
+    		console.log("List" + usersList);
+           	io.sockets.emit('userConnected', {username : name});
+
 	    	socket.emit('loadUsersList', {usersList : usersList});	
+       		usersList.push(name);
 	    })
 	});
 
@@ -53,6 +56,7 @@ console.log(numConnected + ' connected');
     		if(index > -1) {
     			usersList.splice(index, 1);
     		}
+    		console.log("Users left on the service " + usersList);
 
         	io.sockets.emit('userDisconnected', {username : name})	
 

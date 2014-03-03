@@ -15,8 +15,22 @@ function sentMessage() {
 function setUsername() {
     if ($("#usernameInput").val() != "") {
         socket.emit('setUsername', $("#usernameInput").val());
-        $('#chatControls').show();
+
+        $('#chatContainer').show();
         $('#login').hide();
+    }
+}
+
+// TODO we need a better way to determine if a user is logged in or not
+// this is to avoid the case where thare are >2 windows open and they both log in
+// the second to log in will list the first username twice since even though
+// the second window is not logged in, it still handles the log-in event, maybe there is a soln
+function loggedIn() {
+    if($('#chatContainer').is(':visible')) {
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
@@ -29,15 +43,18 @@ socket.on('numConnected', function(data) {
 });
 
 socket.on('loadUsersList', function(data) {
-    for (var i = 0 ; i < data.usersList.length ; i++) {
-        $('#usersConnected').append('<div>' + data.usersList[i] + '</div>');
-        console.log(data.usersList[i]);
+    if(loggedIn) {
+        for (var i = 0 ; i < data.usersList.length ; i++) {
+            $('#usersConnected').append('<div>' + data.usersList[i] + '</div>');
+        }
     }
 });
 
 socket.on('userConnected', function(data) {
     // html inject? gotta fix this
-    $('#usersConnected').append('<div>' + data.username + '</div>')
+    if(loggedIn()) {
+        $('#usersConnected').append('<div>' + data.username + '</div>')
+    }
 });
 
 socket.on('userDisconnected', function(data) {
@@ -46,7 +63,7 @@ socket.on('userDisconnected', function(data) {
 });
 
 $(function() {
-    $("#chatControls").hide();
+    $("#chatContainer").hide();
     $("#setUsername").click(function() {setUsername()});
     $("#submit").click(function() {sentMessage();});
 });
