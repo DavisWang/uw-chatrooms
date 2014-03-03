@@ -1,34 +1,52 @@
 var socket = io.connect();
 
-function addMessage(msg, pseudo) {
-    $("#chatEntries").append('<div class="message"><p>' + pseudo + ' : ' + msg + '</p></div>');
+function addMessage(msg, username) {
+    $("#chatEntries").append('<div class="message"><p>' + username + ' : ' + msg + '</p></div>');
 }
 
 function sentMessage() {
-    if ($('#messageInput').val() != "") 
-    {
+    if ($('#messageInput').val() != "") {
         socket.emit('message', $('#messageInput').val());
         addMessage($('#messageInput').val(), "Me", new Date().toISOString(), true);
         $('#messageInput').val('');
     }
 }
 
-function setPseudo() {
-    if ($("#pseudoInput").val() != "")
-    {
-        socket.emit('setPseudo', $("#pseudoInput").val());
+function setUsername() {
+    if ($("#usernameInput").val() != "") {
+        socket.emit('setUsername', $("#usernameInput").val());
         $('#chatControls').show();
-        $('#pseudoInput').hide();
-        $('#pseudoSet').hide();
+        $('#login').hide();
     }
 }
 
 socket.on('message', function(data) {
-    addMessage(data['message'], data['pseudo']);
+    addMessage(data['message'], data['username']);
+});
+
+socket.on('numConnected', function(data) {
+    $('#numConnected').html('Users online: ' + data.numConnected);
+});
+
+socket.on('loadUsersList', function(data) {
+    for (var i = 0 ; i < data.usersList.length ; i++) {
+        $('#usersConnected').append('<div>' + data.usersList[i] + '</div>');
+        console.log(data.usersList[i]);
+    }
+});
+
+socket.on('userConnected', function(data) {
+    // html inject? gotta fix this
+    $('#usersConnected').append('<div>' + data.username + '</div>')
+});
+
+socket.on('userDisconnected', function(data) {
+    // html inject? gotta fix this
+    $('#usersConnected div:contains(' + data.username + ')').remove();
 });
 
 $(function() {
     $("#chatControls").hide();
-    $("#pseudoSet").click(function() {setPseudo()});
+    $("#setUsername").click(function() {setUsername()});
     $("#submit").click(function() {sentMessage();});
 });
