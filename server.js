@@ -4,7 +4,7 @@ var express = require('express'), app = express()
 	, io = require('socket.io').listen(server);
 var jade = require('jade');
 
-var __dirname = '/Users/Davis/Documents/workspace/uw-chatrooms'
+// var __dirname = '/Users/Davis/Documents/workspace/uw-chatrooms'
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
