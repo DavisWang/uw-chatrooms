@@ -1,7 +1,7 @@
 var socket = io.connect();
 
 function addMessage(msg, username) {
-    $("#chatEntries").append('<div class="message"><p>' + username + ' : ' + msg + '</p></div>');
+    $("#chatEntries").append('<div class="message"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + msg + '</span>');
 }
 
 function sentMessage() {
@@ -54,6 +54,8 @@ socket.on('userConnected', function(data) {
     // html inject? gotta fix this
     if(loggedIn()) {
         $('#usersConnected').append('<div>' + data.username + '</div>')
+
+        // Add msg buffer logic here
     }
 });
 
