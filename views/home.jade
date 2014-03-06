@@ -2,6 +2,8 @@ doctype html
 html
     head
         title Chat
+        link(rel='stylesheet', href='/css/bootstrap.min.css')
+        link(rel='stylesheet', href='/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='/css/style.css')
     body
         div.container
@@ -10,13 +12,23 @@ html
             div#login
                 input(type='text')#usernameInput
                 button#setUsername Set Username
-            div#numConnected
-            div#chatContainer
-                div#usersConnected Users Online
-                div#chatEntries
-                div#chatControls
-                    input(type='text')#messageInput
-                    button#submit Send
+            div#chatPanel.row
+                div#chatContainer.panel.col-xs-8
+                    div#chatEntries
+                    div#chatControls.container
+                        div.row
+                            div.col-lg-12
+                                div.input-group
+                                    input#messageInput.form-control(type='text')
+                                    span.input-group-btn
+                                        button#submit.btn.btn-default(type='button') Send!
+
+                div#sidebar.panel.col-xs-4
+                    div#numConnected
+                    div#usersConnected Users Online
+
+
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
     script(src="/socket.io/socket.io.js")
-    script(src="script.js")
+    script(src="/js/bootstrap.min.js")
+    script(src="/js/script.js")
