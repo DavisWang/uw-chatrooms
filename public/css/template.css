@@ -1,0 +1,59 @@
+	body.noscroll {
+    	overflow:hidden;
+    	height: 100%;
+    	width: 100%;
+    	font-family: "Kreon", "Helvetica", serif;
+    	font-weight: 300;
+    	font-size: 16px;
+	}
+
+	.message {
+		border-radius: 15px;
+		padding: 10px;
+		margin-bottom: 10px;
+		margin-top: 10px;
+	}
+
+	#chatControls {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	.header { 
+		height: 10%;
+		font-weight: 400;
+	}
+
+	.chatPanel {
+		max-height: 90%;
+		margin-top: 71px;
+	}
+
+	#chatEntries {
+		max-height: 75%;
+		min-height: 75%;
+
+		overflow: auto;
+		overflow-x: hidden;
+	}
+
+	#usersConnected {
+		max-height: 75%;
+		min-height: 75%;
+		overflow: auto;
+	}
+
+	.well {
+		border-radius: 15px;
+		margin-right: 10px;
+		margin-left: 10px;
+		border: 3px dashed #e3e3e3;
+	}
+
+	.navbar {
+		font-size: 22px;
+	}
+
+	.navbar-brand {
+		font-weight: 400;
+	}

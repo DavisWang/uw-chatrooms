@@ -1,7 +1,7 @@
 var socket = io.connect();
 
 function addMessage(msg, username) {
-    $("#chatEntries").append('<div class="message"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + msg + '</span>');
+    $("#chatEntries").append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + msg + '</span>');
 }
 
 function sentMessage() {
@@ -15,10 +15,9 @@ function sentMessage() {
 function setUsername() {
     if ($("#usernameInput").val() != "") {
         socket.emit('setUsername', $("#usernameInput").val());
-
-        $('#chatContainer').show();
-        $('#login').hide();
     }
+    $("#loginForm").submit();
+
 }
 
 // TODO we need a better way to determine if a user is logged in or not
@@ -45,7 +44,7 @@ socket.on('numConnected', function(data) {
 socket.on('loadUsersList', function(data) {
     if(loggedIn) {
         for (var i = 0 ; i < data.usersList.length ; i++) {
-            $('#usersConnected').append('<div>' + data.usersList[i] + '</div>');
+            $('#usersConnected').append('<div class="username">' + data.usersList[i] + '</div>');
         }
     }
 });
@@ -53,7 +52,7 @@ socket.on('loadUsersList', function(data) {
 socket.on('userConnected', function(data) {
     // html inject? gotta fix this
     if(loggedIn()) {
-        $('#usersConnected').append('<div>' + data.username + '</div>')
+        $('#usersConnected').append('<div class="username">' + data.username + '</div>')
 
         // Add msg buffer logic here
     }
@@ -61,11 +60,14 @@ socket.on('userConnected', function(data) {
 
 socket.on('userDisconnected', function(data) {
     // html inject? gotta fix this
-    $('#usersConnected div:contains(' + data.username + ')').remove();
+    setTimeout(function () {
+         //do something
+        $('#usersConnected div:contains(' + data.username + ')').remove();
+
+    }, 10000);
 });
 
 $(function() {
-    $("#chatContainer").hide();
-    $("#setUsername").click(function() {setUsername()});
-    $("#submit").click(function() {sentMessage();});
+    $('#setUsername').click(function() {setUsername()});
+    $('#submit').click(function() {sentMessage();});
 });

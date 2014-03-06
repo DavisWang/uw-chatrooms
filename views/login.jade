@@ -1,0 +1,12 @@
+extends base
+
+block content
+	div.jumbotron
+		h1 Welcome to UW Chatrooms
+		p#numConnected
+
+		form#loginForm(method="POST", action="/main")
+			div.input-group
+				input#usernameInput.form-control(type="text", name="username", placeholder="Enter a chat name and login!")
+				span.input-group-btn
+					input#setUsername.btn.btn-info(type="submit button", value="Login!")

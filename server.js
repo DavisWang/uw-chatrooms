@@ -8,67 +8,81 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.set("view options", { layout: false });
 app.configure(function() {
-      app.use(express.static(__dirname + '/public'));
+    app.use(express.static(__dirname + '/public'));
+    app.use(express.urlencoded());
+    app.use(app.router);
+
 });
 
 var numConnected = 0;
 var usersList = Array();
 var msgBuffer = Array();
 
-io.sockets.on('connection', function (socket) {
 
-numConnected++;
-io.sockets.emit('numConnected', {numConnected : numConnected});
-console.log(numConnected + ' connected');
-
-    socket.on('setUsername', function (data) {
-    	socket.set('username', data);
-    	socket.get('username', function (error, name) {
-    		console.log('User ' + name + ' connected');
-
-    		//this adds user to the user array
-           	io.sockets.emit('userConnected', {username : name});
-	    	socket.emit('loadUsersList', {usersList : usersList});	
-       		usersList.push(name);
-	    })
-	});
-
-    socket.on('message', function (message) {
-	    socket.get('username', function (error, name) {
-	        var data = { 'message' : message, username : name };
-	        socket.broadcast.emit('message', data);
-	        console.log('user ' + name + ' send this : ' + message);
-
-	        //Add msg buffer logic here, maybe oop
-	    })
-	});
-
-    socket.on('disconnect', function() {
-    	socket.get('username', function (error, name) {
-    		console.log('User ' + name + ' has disconnected');
-    		numConnected--;
-			io.sockets.emit('numConnected', {numConnected : numConnected});
-    		console.log(numConnected + ' connected');
-
-    		//remove user from the user array
-    		var index = usersList.indexOf(name);
-    		if(index > -1) {
-    			usersList.splice(index, 1);
-    		}
-    		console.log("Users left on the service " + usersList);
-
-        	io.sockets.emit('userDisconnected', {username : name})	
-
-    	})
-    });
-});
 
 var params = new Array(numConnected);
 
-app.get('/', function(req, res){
-  console.log("Request made to " + '/');
-    res.render('home.jade');
+app.post('/main', function(req, res){
+    console.log("Request made to " + '/main');
+
+    console.log(req.body);
+
+
+    //TODO fix the damn event listeners
+    io.sockets.on('connection', function (socket) {
+
+    numConnected++;
+    io.sockets.emit('numConnected', {numConnected : numConnected});
+    console.log(numConnected + ' connected');
+
+        socket.set('username', req.body.username);
+        socket.get('username', function (error, name) {
+            console.log('User ' + name + ' connected');
+
+            //this adds user to the user array
+            io.sockets.emit('userConnected', {username : name});
+            socket.emit('loadUsersList', {usersList : usersList});  
+            usersList.push(name);
+        });
+
+    socket.on('message', function (message) {
+        socket.get('username', function (error, name) {
+            var data = { 'message' : message, username : name };
+            socket.broadcast.emit('message', data);
+            console.log('user ' + name + ' send this : ' + message);
+
+            //Add msg buffer logic here, maybe oop
+        });
+    });
+
+    socket.on('disconnect', function() {
+        socket.get('username', function (error, name) {
+            console.log('User ' + name + ' has disconnected');
+            numConnected--;
+            io.sockets.emit('numConnected', {numConnected : numConnected});
+            console.log(numConnected + ' connected');
+
+            //remove user from the user array
+            var index = usersList.indexOf(name);
+            if(index > -1) {
+                usersList.splice(index, 1);
+            }
+            console.log("Users left on the service " + usersList);
+
+            io.sockets.emit('userDisconnected', {username : name}); 
+
+        });
+    });
 });
+
+    res.render('main.jade');
+});
+
+app.get('/', function(req, res){
+    console.log("Request made to " + '/');
+    res.render('login.jade');
+});
+
 
 
 
