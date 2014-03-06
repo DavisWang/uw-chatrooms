@@ -1,6 +1,6 @@
 var express = require('express'), app = express()
 	, http = require('http')
-	, server = http.createServer(app).listen(3000)
+	, server = http.createServer(app).listen(process.env.PORT || 3000)
 	, io = require('socket.io').listen(server);
 var jade = require('jade');
 
@@ -13,6 +13,7 @@ app.configure(function() {
 
 var numConnected = 0;
 var usersList = Array();
+var msgBuffer = Array();
 
 io.sockets.on('connection', function (socket) {
 
@@ -25,12 +26,8 @@ console.log(numConnected + ' connected');
     	socket.get('username', function (error, name) {
     		console.log('User ' + name + ' connected');
 
-    		//adds user to the user array
-
-    		console.log("User " + name);
-    		console.log("List" + usersList);
+    		//this adds user to the user array
            	io.sockets.emit('userConnected', {username : name});
-
 	    	socket.emit('loadUsersList', {usersList : usersList});	
        		usersList.push(name);
 	    })
@@ -41,6 +38,8 @@ console.log(numConnected + ' connected');
 	        var data = { 'message' : message, username : name };
 	        socket.broadcast.emit('message', data);
 	        console.log('user ' + name + ' send this : ' + message);
+
+	        //Add msg buffer logic here, maybe oop
 	    })
 	});
 
