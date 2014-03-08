@@ -1,35 +1,36 @@
 doctype html
 html
-head
-	title UW Chatrooms
-	link(rel="stylesheet", href="/css/bootstrap.min.css")
-	link(rel="stylesheet", href="/css/template.css")
-	link(rel="stylesheet", href="http://fonts.googleapis.com/css?family=Kreon:300, 400", type="text/css")
+	head
+		title UW Chatrooms
+		link(rel="stylesheet", href="/css/bootstrap.min.css", type="text/css")
+		link(rel="stylesheet", href="/css/template.css", type="text/css")
+		link(rel="stylesheet", href="http://fonts.googleapis.com/css?family=Kreon:300, 400", type="text/css")
 
-body.noscroll
-	div.container
-		nav.navbar.navbar-default.navbar-fixed-top
-			div.container
-				a.navbar-brand(href="/") UW Chatrooms 
-					span.glyphicon.glyphicon-comment
+	body.noscroll
+		div.container
+			nav.navbar.navbar-default.navbar-fixed-top
+				div.container
+					a.navbar-brand(href="/") UW Chatrooms 
+						span.glyphicon.glyphicon-comment
 
-				div.collapse.navbar-collapse
-					ul.nav.navbar-nav.navbar-right
-						li.dropdown
-							a.dropdown-toggle(href="#", data-toggle="dropdown")
-								span.glyphicon.glyphicon-info-sign
-							ul.dropdown-menu
-								li
-									a(href="#") About!
-								li.divider
-								li
-									a(href="#") Contact Me!
+					div.collapse.navbar-collapse
+						ul.nav.navbar-nav.navbar-right
+							li.dropdown
+								a.dropdown-toggle(href="#", data-toggle="dropdown")
+									span.glyphicon.glyphicon-info-sign
+								ul.dropdown-menu
+									li
+										a(href="#") About!
+									li.divider
+									li
+										a(href="#") Contact Me!
 
-		div.row.chatPanel
-			block content
+			div.row.chatPanel
+				block content
 
-	script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
-	script(src="/js/bootstrap.min.js")
-	script(src="/socket.io/socket.io.js")
-	script(src="/js/script.js")
+		script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
+		script(src="/js/bootstrap.min.js")
+		if needSocketIo
+			script(src="/socket.io/socket.io.js")
+			script(src="/js/script.js")
 

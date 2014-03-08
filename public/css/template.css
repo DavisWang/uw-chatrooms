@@ -1,4 +1,4 @@
-	body.noscroll {
+	html, body.noscroll {
     	overflow:hidden;
     	height: 100%;
     	width: 100%;
@@ -7,53 +7,58 @@
     	font-size: 16px;
 	}
 
-	.message {
+	div.container {
+		height: inherit;
+	}
+
+	div.message {
 		border-radius: 15px;
 		padding: 10px;
 		margin-bottom: 10px;
 		margin-top: 10px;
 	}
 
-	#chatControls {
+	div#chatControls {
 		margin-top: 10px;
 		margin-bottom: 10px;
 	}
 
-	.header { 
-		height: 10%;
-		font-weight: 400;
-	}
-
-	.chatPanel {
-		max-height: 90%;
+	div.chatPanel {
 		margin-top: 71px;
+		height: 90%;
 	}
 
-	#chatEntries {
-		max-height: 75%;
-		min-height: 75%;
+		div#chatContainer {
+		height: 90%;
+	}
 
+	div#chatEntries {
+		height: 90%;
 		overflow: auto;
 		overflow-x: hidden;
 	}
 
-	#usersConnected {
-		max-height: 75%;
+	div#usersConnected {
 		min-height: 75%;
 		overflow: auto;
 	}
 
-	.well {
+	div#chatControls {
+		position: absolute;
+		bottom: 20px;
+	}
+
+	div.well {
 		border-radius: 15px;
 		margin-right: 10px;
 		margin-left: 10px;
 		border: 3px dashed #e3e3e3;
 	}
 
-	.navbar {
+	nav.navbar {
 		font-size: 22px;
 	}
 
-	.navbar-brand {
+	a.navbar-brand {
 		font-weight: 400;
 	}

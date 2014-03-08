@@ -1,7 +1,7 @@
 var express = require('express'), app = express()
-	, http = require('http')
-	, server = http.createServer(app).listen(process.env.PORT || 3000)
-	, io = require('socket.io').listen(server);
+, http = require('http')
+, server = http.createServer(app).listen(process.env.PORT || 3000)
+, io = require('socket.io').listen(server);
 var jade = require('jade');
 
 app.set('views', __dirname + '/views');
@@ -18,32 +18,17 @@ var numConnected = 0;
 var usersList = Array();
 var msgBuffer = Array();
 
+io.sockets.on('connection', function (socket) {
 
+    //at this point the user is guarenteed to have a valid username, TODO I should add vaildation login before this point
+    socket.set('username', username);
 
-var params = new Array(numConnected);
-
-app.post('/main', function(req, res){
-    console.log("Request made to " + '/main');
-
-    console.log(req.body);
-
-
-    //TODO fix the damn event listeners
-    io.sockets.on('connection', function (socket) {
-
+    console.log('User ' + username + ' connected');
+    usersList.push(username);
+    io.sockets.emit('loadUsersList', {usersList : usersList});  
     numConnected++;
     io.sockets.emit('numConnected', {numConnected : numConnected});
     console.log(numConnected + ' connected');
-
-        socket.set('username', req.body.username);
-        socket.get('username', function (error, name) {
-            console.log('User ' + name + ' connected');
-
-            //this adds user to the user array
-            io.sockets.emit('userConnected', {username : name});
-            socket.emit('loadUsersList', {usersList : usersList});  
-            usersList.push(name);
-        });
 
     socket.on('message', function (message) {
         socket.get('username', function (error, name) {
@@ -60,28 +45,39 @@ app.post('/main', function(req, res){
             console.log('User ' + name + ' has disconnected');
             numConnected--;
             io.sockets.emit('numConnected', {numConnected : numConnected});
-            console.log(numConnected + ' connected');
-
-            //remove user from the user array
+                //remove user from the user array
             var index = usersList.indexOf(name);
+            console.log("INDEX IS  " + index);
             if(index > -1) {
+                console.log("usersList was " + usersList);
                 usersList.splice(index, 1);
+                console.log("usersList is now " + usersList);
             }
             console.log("Users left on the service " + usersList);
-
-            io.sockets.emit('userDisconnected', {username : name}); 
-
+            socket.broadcast.emit('loadUsersList', {usersList : usersList});  
         });
     });
 });
 
-    res.render('main.jade');
+var params = new Array(numConnected);
+var username;
+app.post('/main', function(req, res){
+    console.log("POST Request made to " + '/main');
+    username = req.body.username;
+    res.render('main.jade', {needSocketIo: true});
+});
+
+app.get('/main', function(req, res){
+    console.log("GET Request made to " + '/main');
+    res.render('login.jade', {needSocketIo: false});
 });
 
 app.get('/', function(req, res){
-    console.log("Request made to " + '/');
-    res.render('login.jade');
+    console.log("GET Request made to " + '/');
+    res.render('login.jade', {needSocketIo: false});
 });
+
+
 
 
 
