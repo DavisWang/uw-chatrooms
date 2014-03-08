@@ -2,11 +2,12 @@ extends base
 
 block content
 	div#chatContainer.col-xs-9.well
+		div#moreMsgs There are more messages!
 		div#chatEntries
 		div#chatControls.input-group
 			input#messageInput.form-control(type="text")
 			span.input-group-btn
-				button#submit.btn.btn-default(type="button submit") Send!
+				button#submit.btn.btn-info(type="button submit") Send!
 	div#usersConnected.col-xs-2.well
 		div#numConnected
 		div#usersList
