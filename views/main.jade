@@ -1,9 +1,18 @@
 extends base
 
 block content
-	div#chatContainer.col-xs-9.well
+	div#tabContainer.col-xs-9
+		ul#tab.nav.nav-tabs
+			li.span
+				a#addRoom(href="#", data-toggle="tab addRoomModal")
+					span.glyphicon.glyphicon-plus
+			li.span
+				a(href="#room-Lobby", data-toggle="tab") Lobby
+
+	div#chatContainer.col-xs-9.well.tab-content
 		div#moreMsgs There are more messages!
-		div#chatEntries
+		div#room-Lobby.tab-pane
+			div.chatEntries
 		div#chatControls.input-group
 			input#messageInput.form-control(type="text")
 			span.input-group-btn
@@ -11,3 +20,15 @@ block content
 	div#usersConnected.col-xs-2.well
 		div#numConnected
 		div#usersList
+
+	div#createRoomModal.modal.fade(tabindex="-1", role="dialog", aria-hidden="true" aria-labelledby="createRoomModalLabel")
+		div.modal-dialog.modal-sm
+			div.modal-content
+				div.modal-header
+					button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+					h4#createRoomModalLabel.modal-title Create a room!
+				div.modal-body
+					input#modalInput(type="text" placeholder="Enter the room name here")
+				div.modal-footer
+					button#roomModalCloseButton.btn.btn-default(type="button" data-dismiss="modal") Close
+					button#createRoomButton.btn.btn-primary Create room!

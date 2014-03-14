@@ -14,57 +14,108 @@ app.configure(function() {
 
 });
 
-var numConnected = 0;
-var usersList = Array();
-var msgBuffer = Array();
+var usernamesList = Array();
 
 io.sockets.on('connection', function (socket) {
 
     //at this point the user is guarenteed to have a valid username, TODO I should add vaildation login before this point
     socket.set('username', username);
-
     console.log('User ' + username + ' connected');
-    usersList.push(username);
-    io.sockets.emit('loadUsersList', {usersList : usersList});  
-    numConnected++;
-    io.sockets.emit('numConnected', {numConnected : numConnected});
-    console.log(numConnected + ' connected');
+    if (typeof username !== 'undefined') {
+        usernamesList.push(username);
+    }
 
-    socket.on('message', function (message) {
+    io.sockets.emit('loadUsersList', usernamesList);
+    io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
+    console.log(io.sockets.clients().length + ' connected');
+
+    socket.on('message', function (clientData) {
         socket.get('username', function (error, name) {
-            var data = { 'message' : message, username : name };
-            socket.broadcast.emit('message', data);
-            console.log('user ' + name + ' send this : ' + message);
+            var data = { 'message' : clientData.messageBody, 'username' : name, 'roomName' : clientData.messageRoom};
+            if (clientData.messageRoom == "Lobby") {
+                socket.broadcast.to('').emit('message', data);
+            }
+            else {
+                socket.broadcast.to(clientData.messageRoom).emit('message', data);
+            }
 
-            //Add msg buffer logic here, maybe oop
+            console.log('user ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
+        });
+    });
+
+    socket.on('createRoom', function (roomName) {
+        socket.get('username', function (error, name) {
+            var created = false;
+            var errorCode = 0;
+            if(!isValidString(roomName)) {
+                errorCode = 1;
+            }
+            else if (typeof io.sockets.manager.rooms['/' + roomName] !== 'undefined') {
+                errorCode = 2;
+            }
+            else if (roomName == "Lobby") {
+                errorCode = 3;
+            }
+            else {
+                console.log("User " + name + " created room name: " + roomName);
+                created = true;
+            }
+            var data = {'created' : created, 'roomName' : roomName, 'errorCode' : errorCode};
+            socket.emit('createRoomResponse', data);
+
+        });
+    });
+
+    socket.on('joinRoom', function (roomName) {
+        socket.get('username', function (error, username) {
+            socket.join(roomName);
+            console.log("Added user: " + username + " to room: " + roomName);
+        });
+    });
+
+    socket.on('leaveRoom', function (roomName) {
+        socket.get('username', function (error, username) {
+            socket.leave(roomName);
+            console.log("Removed user: " + username + " from room: " + roomName);
         });
     });
 
     socket.on('disconnect', function() {
-        socket.get('username', function (error, name) {
-            console.log('User ' + name + ' has disconnected');
-            numConnected--;
-            io.sockets.emit('numConnected', {numConnected : numConnected});
-                //remove user from the user array
-            var index = usersList.indexOf(name);
-            console.log("INDEX IS  " + index);
+        socket.get('username', function (error, username) {
+            console.log('User ' + username + ' has disconnected');
+            io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
+
+            var index = usernamesList.indexOf(username);
             if(index > -1) {
-                console.log("usersList was " + usersList);
-                usersList.splice(index, 1);
-                console.log("usersList is now " + usersList);
+                console.log("usernamesList was " + usernamesList);
+                usernamesList.splice(index, 1);
+                console.log("usernamesList is now " + usernamesList);
             }
-            console.log("Users left on the service " + usersList);
-            socket.broadcast.emit('loadUsersList', {usersList : usersList});  
+
+            console.log("Users left on the service " + usernamesList);
+            socket.broadcast.emit('loadUsersList', usernamesList);
         });
     });
 });
 
-var params = new Array(numConnected);
+//Determines whether the given string is a proper username or room
+//alphanumeric + spaces + hyphen
+function isValidString (string) {
+    var valid = /^[a-zA-Z0-9- ]*$/.test(string) ? true : false;
+    return valid;
+}
+
 var username;
 app.post('/main', function(req, res){
     console.log("POST Request made to " + '/main');
     username = req.body.username;
-    res.render('main.jade', {needSocketIo: true});
+    if(isValidString(username)) {
+        console.log("User logged in as " + username);
+        res.render('main.jade', {needSocketIo: true});
+    }
+    else {
+        res.render('login.jade', {needSocketIo: false});
+    }
 });
 
 app.get('/main', function(req, res){
@@ -76,9 +127,3 @@ app.get('/', function(req, res){
     console.log("GET Request made to " + '/');
     res.render('login.jade', {needSocketIo: false});
 });
-
-
-
-
-
-
