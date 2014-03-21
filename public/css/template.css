@@ -40,7 +40,11 @@ div.chatEntries {
 
 div#usersConnected {
 	height: inherit;
-	overflow: auto;
+	/*overflow: auto;*/
+}
+
+div#numConnected, div#inThisRoom {
+	font-weight: bold;
 }
 
 div#chatControls {

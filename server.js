@@ -14,29 +14,37 @@ app.configure(function() {
 
 });
 
-var usernamesList = Array();
+//usersList id -> username
+//userListr username -> id
+var usersList = new Array();
+var usersListr = new Array();
 
 io.sockets.on('connection', function (socket) {
 
-    //at this point the user is guarenteed to have a valid username, TODO I should add vaildation login before this point
+    //TODO: bug connect with valid username, shutdown server, restart server, username is now null
+    //at this point the user is guarenteed to have a valid username, TODO I should add validation login before this point
     socket.set('username', username);
     console.log('User ' + username + ' connected');
-    if (typeof username !== 'undefined') {
-        usernamesList.push(username);
+    var clients = io.sockets.clients();
+    // console.log(clients);
+    if (typeof username !== 'undefined' && typeof username != null) {
+        usersList[socket.id] = username;
+        usersListr[username] = socket.id;
     }
 
-    io.sockets.emit('loadUsersList', usernamesList);
+    io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
     io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
     console.log(io.sockets.clients().length + ' connected');
 
-    socket.on('message', function (clientData) {
+    socket.on('sendMessage', function (clientData) {
         socket.get('username', function (error, name) {
             var data = { 'message' : clientData.messageBody, 'username' : name, 'roomName' : clientData.messageRoom};
             if (clientData.messageRoom == "Lobby") {
-                socket.broadcast.to('').emit('message', data);
+                socket.broadcast.to('').emit('sendMessageResponse', data);
             }
             else {
-                socket.broadcast.to(clientData.messageRoom).emit('message', data);
+                console.log("broadcast room: " + clientData.messageRoom);
+                socket.broadcast.to(clientData.messageRoom).emit('sendMessageResponse', data);
             }
 
             console.log('user ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
@@ -50,9 +58,9 @@ io.sockets.on('connection', function (socket) {
             if(!isValidString(roomName)) {
                 errorCode = 1;
             }
-            else if (typeof io.sockets.manager.rooms['/' + roomName] !== 'undefined') {
-                errorCode = 2;
-            }
+            // else if (typeof io.sockets.manager.rooms['/' + roomName] !== 'undefined') {
+            //     errorCode = 2;
+            // }
             else if (roomName == "Lobby") {
                 errorCode = 3;
             }
@@ -69,15 +77,53 @@ io.sockets.on('connection', function (socket) {
     socket.on('joinRoom', function (roomName) {
         socket.get('username', function (error, username) {
             socket.join(roomName);
+
+            // socket.emit('updateRoomList', io.sockets.manager.roomClients[socket.id]);
+
+            io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Added user: " + username + " to room: " + roomName);
+            console.log("User is in rooms: ");
+            console.log(io.sockets.manager.roomClients[socket.id]);
+            console.log("List of all rooms: ");
+            console.log(io.sockets.manager.rooms);
+            // console.log("List of clients in this room: ");
+            // console.log(io.sockets.clients(roomName));
         });
     });
 
     socket.on('leaveRoom', function (roomName) {
         socket.get('username', function (error, username) {
             socket.leave(roomName);
+
+            // socket.emit('updateRoomList', io.sockets.manager.roomClients[socket.id]);
+
+            io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Removed user: " + username + " from room: " + roomName);
+            console.log("User is in rooms: ");
+            console.log(io.sockets.manager.roomClients[socket.id]);
+            console.log("List of all rooms: ");
+            console.log(io.sockets.manager.rooms);
         });
+    });
+
+    // socket.on('switchToRoom', function (roomName) {
+    //     //get users in a room
+    //     //WE DON'T ACTUALLY NEED THIS AS IT SHOULD ONLY BE UPDATED WHEN THERE IS AN ACTUAL CHANGE IN USERLIST
+    //     socket.emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
+    // });
+
+    //data.username: who to invite
+    //data.roomName: the room to invite to
+    socket.on('inviteUser', function (data) {
+        //notify the target client with a modal
+        socket.get('username', function (error, username) {
+            io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
+        });
+    });
+
+    socket.on('acceptInvitation', function (roomName) {
+        var data = {'created' : true, 'roomName' : roomName, 'errorCode' : 0};
+        socket.emit('createRoomResponse', data);
     });
 
     socket.on('disconnect', function() {
@@ -85,15 +131,36 @@ io.sockets.on('connection', function (socket) {
             console.log('User ' + username + ' has disconnected');
             io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
 
-            var index = usernamesList.indexOf(username);
-            if(index > -1) {
-                console.log("usernamesList was " + usernamesList);
-                usernamesList.splice(index, 1);
-                console.log("usernamesList is now " + usernamesList);
+            console.log(io.sockets.manager.roomClients[socket.id]);
+
+            for (room in io.sockets.manager.roomClients[socket.id]) {
+                socket.leave(room);
+                console.log("Leaving room: " + room);
+
+                if (room == "") {
+                    console.log("Broadcasting to Lobby");
+                    socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(''));
+                }
+                else {
+                    console.log("Broadcasting to room:" + room);
+                    socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(room.substring(1)));
+                }
+
+                console.log(io.sockets.manager.roomClients[socket.id]);
             }
 
-            console.log("Users left on the service " + usernamesList);
-            socket.broadcast.emit('loadUsersList', usernamesList);
+            // console.log(io.sockets.manager.roomClients[socket.id]);
+
+            console.log("usersList was ");
+            console.log(usersList);
+            delete usersList[socket.id];
+            console.log("usersList is now ");
+            console.log(usersList);
+
+            // console.log("Users left on the service " + usernamesList);
+            // var data = { 'roomName' :}
+            // socket.broadcast.emit('loadUsersList', usernamesList);
+            //also broadcast to rooms that the disconnected user was in
         });
     });
 });
@@ -103,6 +170,23 @@ io.sockets.on('connection', function (socket) {
 function isValidString (string) {
     var valid = /^[a-zA-Z0-9- ]*$/.test(string) ? true : false;
     return valid;
+}
+
+//given a room, generate a list of usernames that represent users in that room
+function getUsernamesList(room) {
+    var usernamesList = new Array();
+    if(room == "Lobby" || room == "") {
+        for (var i = 0 ; i <  io.sockets.clients().length ; i++) {
+            usernamesList.push(usersList[io.sockets.clients()[i].id]);
+        }
+        return usernamesList;
+    }
+    else {
+        for (var i = 0 ; i <  io.sockets.clients(room).length ; i++) {
+            usernamesList.push(usersList[io.sockets.clients(room)[i].id]);
+        }
+        return usernamesList;
+    }
 }
 
 var username;
