@@ -1,5 +1,8 @@
 var socket = io.connect();
 
+//keep a list of rooms that the client is in so we don't make a lot of server requests
+var userRoomsList;
+
 function addMessage(msg, roomName, username) {
     //append to the right div/ie to the right room
     // window.alert(msg + " " + roomName + " " + username);
@@ -34,7 +37,6 @@ function setUsername() {
 }
 
 socket.on('sendMessageResponse', function (data) {
-    // window.alert("tEST");
     addMessage(data['message'], data['roomName'], data['username']);
 });
 
@@ -42,9 +44,9 @@ socket.on('numConnected', function (data) {
     $('#numConnected').html('Users online: ' + data.numConnected);
 });
 
-// socket.on('updateRoomList', function (roomList) {
-//     socket.set('roomList', roomList);
-// });
+socket.on('updateRoomsList', function (roomsList) {
+    userRoomsList = roomsList;
+});
 
 
 socket.on('loadUsersList', function (data) {
@@ -67,14 +69,13 @@ socket.on('createRoomResponse', function (data) {
         $('div#chatContainer').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chatEntries"></div></div>');
         $('div#usersConnected').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
-        $('ul#tab').append('<li class="span"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +' <span class="glyphicon glyphicon-remove"></span></a></li>');
+        $('ul#tab').append('<li class="span"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
             $('div.usersList').hide(); //hide all other usersLists
             $('div#usersList-' + data.roomName).show(); //show the specific room usersList
 
-            // socket.emit('switchToRoom', data.roomName);
         });
         $('ul#tab li:contains(' + data.roomName + ') span.glyphicon-remove').click(function () {
             $(this).parent().parent().remove(); //removes the li tag
@@ -88,10 +89,12 @@ socket.on('createRoomResponse', function (data) {
         socket.emit('joinRoom', data.roomName);
 
         $('ul#tab li:contains(' + data.roomName + ') a').click();
+
     }
     else {
         if(data.errorCode == 1) {
-            window.alert("Illegal room name! Room name can only contain alphanumeric characters, hyphen, and spaces!");
+            //TODO provide support for spaces
+            window.alert("Illegal room name! Room name can only contain alphanumeric characters, hyphen, and underscores!");
         }
         else if (data.errorCode == 2) {
             window.alert("A room with that name already exists! Please choose another name!");
@@ -119,8 +122,6 @@ $(function() {
         $(this).tab('show');
         $('div.usersList').hide(); //hide all other usersLists
         $('div#usersList-Lobby').show(); //show the main usersList
-        socket.emit('switchToRoom', 'Lobby');
-
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');

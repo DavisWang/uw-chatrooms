@@ -34,6 +34,9 @@ io.sockets.on('connection', function (socket) {
 
     io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
     io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
+
+    socket.emit('updateRoomsList', getUserRoomList(socket));
+
     console.log(io.sockets.clients().length + ' connected');
 
     socket.on('sendMessage', function (clientData) {
@@ -78,16 +81,15 @@ io.sockets.on('connection', function (socket) {
         socket.get('username', function (error, username) {
             socket.join(roomName);
 
-            // socket.emit('updateRoomList', io.sockets.manager.roomClients[socket.id]);
+            socket.emit('updateRoomsList', getUserRoomList(socket));
+            console.log("sending room list to client: " + getUserRoomList(socket));
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Added user: " + username + " to room: " + roomName);
             console.log("User is in rooms: ");
-            console.log(io.sockets.manager.roomClients[socket.id]);
+            console.log(io.roomClients[socket.id]);
             console.log("List of all rooms: ");
             console.log(io.sockets.manager.rooms);
-            // console.log("List of clients in this room: ");
-            // console.log(io.sockets.clients(roomName));
         });
     });
 
@@ -95,7 +97,7 @@ io.sockets.on('connection', function (socket) {
         socket.get('username', function (error, username) {
             socket.leave(roomName);
 
-            // socket.emit('updateRoomList', io.sockets.manager.roomClients[socket.id]);
+            socket.emit('updateRoomsList', getUserRoomList(socket));
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Removed user: " + username + " from room: " + roomName);
@@ -105,12 +107,6 @@ io.sockets.on('connection', function (socket) {
             console.log(io.sockets.manager.rooms);
         });
     });
-
-    // socket.on('switchToRoom', function (roomName) {
-    //     //get users in a room
-    //     //WE DON'T ACTUALLY NEED THIS AS IT SHOULD ONLY BE UPDATED WHEN THERE IS AN ACTUAL CHANGE IN USERLIST
-    //     socket.emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
-    // });
 
     //data.username: who to invite
     //data.roomName: the room to invite to
@@ -168,7 +164,7 @@ io.sockets.on('connection', function (socket) {
 //Determines whether the given string is a proper username or room
 //alphanumeric + spaces + hyphen
 function isValidString (string) {
-    var valid = /^[a-zA-Z0-9- ]*$/.test(string) ? true : false;
+    var valid = /^[a-zA-Z0-9-_]*$/.test(string) ? true : false;
     return valid;
 }
 
@@ -187,6 +183,19 @@ function getUsernamesList(room) {
         }
         return usernamesList;
     }
+}
+
+function getUserRoomList(socket) {
+    var roomList = new Array();
+    for (room in io.sockets.manager.roomClients[socket.id]) {
+        if(room == "") {
+            roomList.push("Lobby");
+        }
+        else {
+            roomList.push(room.substring(1));
+        }
+    }
+    return roomList;
 }
 
 var username;
