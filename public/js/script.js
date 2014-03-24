@@ -5,7 +5,6 @@ var userRoomsList;
 
 function addMessage(msg, roomName, username) {
     //append to the right div/ie to the right room
-    // window.alert(msg + " " + roomName + " " + username);
     $('div#chatContainer div#room-' + roomName + ' div.chatEntries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + msg + '</span></div>');
 
     var roomChatEntries = $('div#chatContainer div#room-' + roomName + ' div.chatEntries');
@@ -46,6 +45,13 @@ socket.on('numConnected', function (data) {
 
 socket.on('updateRoomsList', function (roomsList) {
     userRoomsList = roomsList;
+
+    // $('.userPopover').data('bs.popover').options.content = roomsList;
+
+    // $('.userPopover').each({
+    //     var popover = $(this).data('popover');
+    //     popover.options.content = roomsList;
+    // });
 });
 
 
@@ -53,8 +59,13 @@ socket.on('loadUsersList', function (data) {
     // TODO gotta fix this, encode
     $('#usersList-' + data.roomName).empty();
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
-        $('#usersList-' + data.roomName).append('<div class="username">' + data.usernamesList[i] + '</div>');
+        $('#usersList-' + data.roomName).append('<div class="username"><a class="userPopover" href="#">' + data.usernamesList[i] + '</a></div>');
     }
+
+    // $('.userPopover').popover({
+    //     placement : 'bottom',
+    //     content : userRoomsList
+    // });
 });
 
 socket.on('roomInvite', function (data) {

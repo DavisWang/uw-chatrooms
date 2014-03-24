@@ -25,8 +25,7 @@ io.sockets.on('connection', function (socket) {
     //at this point the user is guarenteed to have a valid username, TODO I should add validation login before this point
     socket.set('username', username);
     console.log('User ' + username + ' connected');
-    var clients = io.sockets.clients();
-    // console.log(clients);
+
     if (typeof username !== 'undefined' && typeof username != null) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
