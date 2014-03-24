@@ -8,3 +8,8 @@ I got this idea from a friend who wanted to create a chat web application for a 
 I wrote this chat application for fun and to improve my programming skills. With a hope that some people can use it and benefit from it.
 
 This is and always will be a work in progress, please email me at davis@daviswang.com if you have any questions, comments, or if you'd like to submit a bug report.
+
+Collaborators:
+
+Davis Wang <davis@daviswang.com>
+Jason Chan <jason810118@gmail.com>
