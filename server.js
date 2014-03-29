@@ -209,7 +209,7 @@ var username;
 app.post('/main', function(req, res){
     console.log("POST Request made to " + '/main');
     username = req.body.username;
-    if(isValidString(username)) {
+    if(isValidString(username) && !usersListr[username]) {
         console.log("User logged in as " + username);
         res.render('main.jade');
     }
