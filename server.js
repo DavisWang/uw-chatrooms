@@ -161,8 +161,14 @@ io.sockets.on('connection', function (socket) {
 
             // console.log("Users left on the service " + usernamesList);
             // var data = { 'roomName' :}
-            // socket.broadcast.emit('loadUsersList', usernamesList);
-            //also broadcast to rooms that the disconnected user was in
+            for (room in io.sockets.manager.roomClients[socket.id]) {
+                if(room == "") {
+                    io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
+                }
+                else {
+                    io.sockets.emit('loadUsersList', {'roomName' : room.substring(1), 'usernamesList' : getUsernamesList(room.substring(1))});
+                }
+            }
         });
     });
 });
@@ -180,13 +186,17 @@ function getUsernamesList(room) {
     var usernamesList = new Array();
     if(room == "Lobby" || room == "") {
         for (var i = 0 ; i <  io.sockets.clients().length ; i++) {
-            usernamesList.push(usersList[io.sockets.clients()[i].id]);
+            if(usersList[io.sockets.clients()[i].id]) {
+                usernamesList.push(usersList[io.sockets.clients()[i].id]);
+            }
         }
         return usernamesList;
     }
     else {
         for (var i = 0 ; i <  io.sockets.clients(room).length ; i++) {
-            usernamesList.push(usersList[io.sockets.clients(room)[i].id]);
+            if(usersList[io.sockets.clients()[i].id]) {
+                usernamesList.push(usersList[io.sockets.clients(room)[i].id]);
+            }
         }
         return usernamesList;
     }
