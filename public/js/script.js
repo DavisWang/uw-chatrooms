@@ -46,11 +46,9 @@ socket.on('numConnected', function (data) {
 
 socket.on('updateRoomsList', function (roomsList) {
     userRoomsList = roomsList;
-    // console.log(userRoomsList);
 });
 
 socket.on('loadUsersList', function (data) {
-    // TODO gotta fix this, encode
     $('#usersList-' + data.roomName).empty();
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.roomName == "Lobby") {
@@ -82,6 +80,7 @@ socket.on('createRoomResponse', function (data) {
     if(data.created) {
         //chatContainer DOM creation
         $('div#chatContainer').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chatEntries"></div></div>');
+        //room userList DOM creation
         $('div#usersConnected').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
@@ -103,7 +102,6 @@ socket.on('createRoomResponse', function (data) {
             socket.emit('leaveRoom', data.roomName);
 
             $('ul#tab a:contains("Lobby")').click(); //go back to the lobby
-
         });
 
         //attach dnd event listeners
@@ -123,9 +121,7 @@ socket.on('createRoomResponse', function (data) {
             drop: function(e) {
                 $(this).removeClass('over');
                 e.preventDefault();
-                // var roomName = $('ul#tab li.active').text();
                 socket.emit('inviteUser', {'username' : e.dataTransfer.getData('username'), 'roomName' : data.roomName});
-                // alert("Adding User: " + e.dataTransfer.getData('username') + " to room: " + roomName);
             }
         });
 
@@ -139,7 +135,6 @@ socket.on('createRoomResponse', function (data) {
     }
     else {
         if(data.errorCode == 1) {
-            //TODO provide support for spaces
             window.alert("Illegal room name! Room name can only contain alphanumeric characters, hyphen, and underscores!");
         }
         else if (data.errorCode == 2) {

@@ -35,7 +35,6 @@ div.chatEntries {
 
 div#usersConnected {
 	height: inherit;
-	/*overflow: auto;*/
 }
 
 div#numConnected {
@@ -58,10 +57,6 @@ div.username {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-
-.over {
-	background-color: #eee;
 }
 
 div.well {
@@ -92,13 +87,7 @@ div#moreMsgs {
 	z-index: 5;
 }
 
-/* Modal related css */
-
-#createRoomModal {
-	/*width: 300px !important;*/
-	/*height: 200px !important;*/
-
-}
+/* Create Room Modal related css */
 
 #createRoomModal input#modalInput {
 	width: 80%;
@@ -142,6 +131,9 @@ ul#tab li[class*="span"] {
 	float: none;
 }
 
+.over {
+	background-color: #eee;
+}
 
 span.glyphicon-remove {
 	top: 3px;

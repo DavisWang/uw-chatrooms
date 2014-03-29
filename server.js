@@ -113,13 +113,13 @@ io.sockets.on('connection', function (socket) {
         socket.get('username', function (error, username) {
             //TODO notify the target client with a modal
             //do data validation here
-            //cannot invite youself
-            //cannot invite someone already in room
+            //cannot invite youself, cannot invite someone already in room
             if (data.username != username && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
                 io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
             }
             else {
                 console.log("Cannot invite user: " + data.username + " to room: " + data.roomName);
+                socket.emit()
             }
         });
     });
@@ -152,10 +152,9 @@ io.sockets.on('connection', function (socket) {
                 console.log(io.sockets.manager.roomClients[socket.id]);
             }
 
-            // console.log(io.sockets.manager.roomClients[socket.id]);
-
             console.log("usersList was ");
             console.log(usersList);
+            delete usersListr[usersList[socket.id]]
             delete usersList[socket.id];
             console.log("usersList is now ");
             console.log(usersList);
@@ -169,7 +168,8 @@ io.sockets.on('connection', function (socket) {
 });
 
 //Determines whether the given string is a proper username or room
-//alphanumeric + spaces + hyphen
+//alphanumeric + underscore + hyphen
+//TODO provide support for spaces?
 function isValidString (string) {
     var valid = /^[a-zA-Z0-9-_]*$/.test(string) ? true : false;
     return valid;
