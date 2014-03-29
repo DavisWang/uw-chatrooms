@@ -22,8 +22,10 @@ html
 									span.glyphicon.glyphicon-info-sign
 								ul.dropdown-menu
 									li
-										a#about(href="#", rel="popover") About!
+										a#help(href="#", rel="popover") Help!
 									li.divider
+									li
+										a#about(href="#", rel="popover") About!
 									li
 										a(href="mailto:davis@daviswang.com") Contact Me!
 									li
@@ -47,6 +49,11 @@ html
 			$("#about").popover({
 				placement : "bottom", 
 				content : "I created this mainly as an exercise for myself, to improve my front-end skills. I hope you like it!",
+				trigger : "hover"
+			});
+			$("#help").popover({
+				placement : "bottom",
+				content : "Click the '+' to create a room, drag a user to a room tab to add the user to that room, that's it!",
 				trigger : "hover"
 			});
 
