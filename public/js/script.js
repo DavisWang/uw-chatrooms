@@ -35,6 +35,7 @@ function setUsername() {
     $("#loginForm").submit();
 }
 
+
 socket.on('sendMessageResponse', function (data) {
     addMessage(data['message'], data['roomName'], data['username']);
 });
@@ -45,27 +46,30 @@ socket.on('numConnected', function (data) {
 
 socket.on('updateRoomsList', function (roomsList) {
     userRoomsList = roomsList;
-
-    // $('.userPopover').data('bs.popover').options.content = roomsList;
-
-    // $('.userPopover').each({
-    //     var popover = $(this).data('popover');
-    //     popover.options.content = roomsList;
-    // });
+    // console.log(userRoomsList);
 });
-
 
 socket.on('loadUsersList', function (data) {
     // TODO gotta fix this, encode
     $('#usersList-' + data.roomName).empty();
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
-        $('#usersList-' + data.roomName).append('<div class="username"><a class="userPopover" href="#">' + data.usernamesList[i] + '</a></div>');
+        if (data.roomName == "Lobby") {
+            $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+        }
+        else {
+            $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+        }
+        var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
+        usernameElement.on({
+            dragstart: function(e) {
+                e.dataTransfer.setData("username", $(this).text());
+                $(this).css('opacity', '0.5');
+            },
+            dragend: function(e) {
+                $(this).css('opacity', '1');
+            },
+        });
     }
-
-    // $('.userPopover').popover({
-    //     placement : 'bottom',
-    //     content : userRoomsList
-    // });
 });
 
 socket.on('roomInvite', function (data) {
@@ -80,7 +84,9 @@ socket.on('createRoomResponse', function (data) {
         $('div#chatContainer').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chatEntries"></div></div>');
         $('div#usersConnected').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
-        $('ul#tab').append('<li class="span"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
+        $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
+
+        //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
@@ -88,10 +94,39 @@ socket.on('createRoomResponse', function (data) {
             $('div#usersList-' + data.roomName).show(); //show the specific room usersList
 
         });
+
+        //close tab functionality
         $('ul#tab li:contains(' + data.roomName + ') span.glyphicon-remove').click(function () {
             $(this).parent().parent().remove(); //removes the li tag
-            $('div#room-' + data.roomName).remove();
+            $('div#room-' + data.roomName).remove(); //remove the main chatpanel
+            $('div#userlist-' + data.roomName).remove(); //remove userlist
             socket.emit('leaveRoom', data.roomName);
+
+            $('ul#tab a:contains("Lobby")').click(); //go back to the lobby
+
+        });
+
+        //attach dnd event listeners
+        $('#tabContainer .roomTab:contains(' + data.roomName + ') a').on({
+            dragleave: function(e) {
+                $(this).removeClass('over');
+                e.preventDefault();
+            },
+            dragenter: function(e) {
+                $(this).addClass('over');
+                e.preventDefault();
+            },
+            dragover: function(e) {
+                $(this).addClass('over');
+                e.preventDefault();
+            },
+            drop: function(e) {
+                $(this).removeClass('over');
+                e.preventDefault();
+                // var roomName = $('ul#tab li.active').text();
+                socket.emit('inviteUser', {'username' : e.dataTransfer.getData('username'), 'roomName' : data.roomName});
+                // alert("Adding User: " + e.dataTransfer.getData('username') + " to room: " + roomName);
+            }
         });
 
         $('#roomModalCloseButton').click(); //close the window
@@ -121,6 +156,9 @@ socket.on('createRoomResponse', function (data) {
 
 
 $(function() {
+
+    jQuery.event.props.push('dataTransfer');
+
     $('#messageInput').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){

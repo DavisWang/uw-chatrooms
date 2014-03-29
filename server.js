@@ -15,7 +15,7 @@ app.configure(function() {
 });
 
 //usersList id -> username
-//userListr username -> id
+//usersListr username -> id
 var usersList = new Array();
 var usersListr = new Array();
 
@@ -60,9 +60,9 @@ io.sockets.on('connection', function (socket) {
             if(!isValidString(roomName)) {
                 errorCode = 1;
             }
-            // else if (typeof io.sockets.manager.rooms['/' + roomName] !== 'undefined') {
-            //     errorCode = 2;
-            // }
+            else if (typeof io.sockets.manager.rooms['/' + roomName] !== 'undefined') {
+                errorCode = 2;
+            }
             else if (roomName == "Lobby") {
                 errorCode = 3;
             }
@@ -110,9 +110,17 @@ io.sockets.on('connection', function (socket) {
     //data.username: who to invite
     //data.roomName: the room to invite to
     socket.on('inviteUser', function (data) {
-        //notify the target client with a modal
         socket.get('username', function (error, username) {
-            io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
+            //TODO notify the target client with a modal
+            //do data validation here
+            //cannot invite youself
+            //cannot invite someone already in room
+            if (data.username != username && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+                io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
+            }
+            else {
+                console.log("Cannot invite user: " + data.username + " to room: " + data.roomName);
+            }
         });
     });
 
@@ -203,19 +211,19 @@ app.post('/main', function(req, res){
     username = req.body.username;
     if(isValidString(username)) {
         console.log("User logged in as " + username);
-        res.render('main.jade', {needSocketIo: true});
+        res.render('main.jade');
     }
     else {
-        res.render('login.jade', {needSocketIo: false});
+        res.render('login.jade');
     }
 });
 
 app.get('/main', function(req, res){
     console.log("GET Request made to " + '/main');
-    res.render('login.jade', {needSocketIo: false});
+    res.render('login.jade');
 });
 
 app.get('/', function(req, res){
     console.log("GET Request made to " + '/');
-    res.render('login.jade', {needSocketIo: false});
+    res.render('login.jade');
 });

@@ -1,5 +1,7 @@
 extends base
 
+block head
+
 block content
 	div#tabContainer.col-xs-9
 		ul#tab.nav.nav-tabs
@@ -32,3 +34,7 @@ block content
 				div.modal-footer
 					button#roomModalCloseButton.btn.btn-default(type="button" data-dismiss="modal") Close
 					button#createRoomButton.btn.btn-primary Create room!
+
+block bottom
+	script(src="/socket.io/socket.io.js")
+	script(src="/js/script.js")

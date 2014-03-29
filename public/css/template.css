@@ -18,11 +18,6 @@ div.message {
 	margin-top: 10px;
 }
 
-div#chatControls {
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-
 div.chatPanel {
 	margin-top: 71px;
 	height: 90%;
@@ -43,13 +38,30 @@ div#usersConnected {
 	/*overflow: auto;*/
 }
 
-div#numConnected, div#inThisRoom {
+div#numConnected {
 	font-weight: bold;
 }
 
 div#chatControls {
+	margin-top: 10px;
+	margin-bottom: 10px;
 	position: absolute;
 	bottom: 10px;
+}
+
+
+span.glyphicon-user {
+	margin-right: 5px;
+}
+
+div.username {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.over {
+	background-color: #eee;
 }
 
 div.well {
@@ -94,10 +106,20 @@ div#moreMsgs {
 
 /*Tab related css */
 
+.nav-tabs>li {
+	margin-bottom: 0px;
+}
+
+.nav-tabs>li>a {
+	padding: 10px 15px 6px 15px;
+}
+
 .nav-tabs>li.active>a,
 .nav-tabs>li.active>a:hover,
 .nav-tabs>li.active>a:focus {
-	border: 2px dashed #e3e3e3;
+	border-top: 2px dashed #e3e3e3;
+	border-right: 2px dashed #e3e3e3;
+	border-left: 2px dashed #e3e3e3;
 	border-radius: 4px 4px 0 0;
 	background-color: #eee;
 	display: inline-block;
@@ -118,7 +140,6 @@ ul#tab {
 ul#tab li[class*="span"] {
 	display: inline-block;
 	float: none;
-	margin-bottom: -5px;
 }
 
 
