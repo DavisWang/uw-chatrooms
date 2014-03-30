@@ -12,4 +12,5 @@ This is and always will be a work in progress, please email me at davis@daviswan
 Collaborators:
 
 Davis Wang <davis@daviswang.com>
+
 Jason Chan <jason810118@gmail.com>

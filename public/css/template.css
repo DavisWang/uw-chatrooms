@@ -57,6 +57,11 @@ div.username {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	color: #777;
+}
+
+div.username:hover {
+	color: #000;
 }
 
 div.well {
