@@ -19,6 +19,7 @@ div.message {
 }
 
 div.chatPanel {
+	/* The margin-top pushes the chatPanel below the navbar */
 	margin-top: 71px;
 	height: 90%;
 }

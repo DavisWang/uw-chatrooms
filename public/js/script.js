@@ -26,7 +26,7 @@ function sentMessage() {
         socket.emit('sendMessage', data);
 
         //this current implementation is that when you send a message, for you, the message doesn't go to the server, only for others
-        addMessage(messageBody, roomName ,"Me", new Date().toISOString(), true);
+        addMessage(messageBody, roomName ,"Me");
         $('#messageInput').val(''); //clear the input field
     }
 }
@@ -51,12 +51,8 @@ socket.on('updateRoomsList', function (roomsList) {
 socket.on('loadUsersList', function (data) {
     $('#usersList-' + data.roomName).empty();
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
-        if (data.roomName == "Lobby") {
-            $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
-        }
-        else {
-            $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
-        }
+        $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+
         var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
         usernameElement.on({
             dragstart: function(e) {

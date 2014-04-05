@@ -14,15 +14,14 @@ app.configure(function() {
 
 });
 
-//usersList id -> username
-//usersListr username -> id
+//usersList: id -> username
+//usersListr: username -> id
 var usersList = new Array();
 var usersListr = new Array();
 
 io.sockets.on('connection', function (socket) {
 
     //TODO: bug connect with valid username, shutdown server, restart server, username is now null
-    //at this point the user is guarenteed to have a valid username, TODO I should add validation login before this point
     socket.set('username', username);
     console.log('User ' + username + ' connected');
 
@@ -87,8 +86,6 @@ io.sockets.on('connection', function (socket) {
             console.log("Added user: " + username + " to room: " + roomName);
             console.log("User is in rooms: ");
             console.log(io.roomClients[socket.id]);
-            console.log("List of all rooms: ");
-            console.log(io.sockets.manager.rooms);
         });
     });
 
@@ -102,8 +99,6 @@ io.sockets.on('connection', function (socket) {
             console.log("Removed user: " + username + " from room: " + roomName);
             console.log("User is in rooms: ");
             console.log(io.sockets.manager.roomClients[socket.id]);
-            console.log("List of all rooms: ");
-            console.log(io.sockets.manager.rooms);
         });
     });
 
@@ -119,7 +114,7 @@ io.sockets.on('connection', function (socket) {
             }
             else {
                 console.log("Cannot invite user: " + data.username + " to room: " + data.roomName);
-                socket.emit()
+                //TODO emit a message to the socket of an error
             }
         });
     });
@@ -133,8 +128,6 @@ io.sockets.on('connection', function (socket) {
         socket.get('username', function (error, username) {
             console.log('User ' + username + ' has disconnected');
             io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
-
-            console.log(io.sockets.manager.roomClients[socket.id]);
 
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 socket.leave(room);
@@ -159,8 +152,6 @@ io.sockets.on('connection', function (socket) {
             console.log("usersList is now ");
             console.log(usersList);
 
-            // console.log("Users left on the service " + usernamesList);
-            // var data = { 'roomName' :}
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 if(room == "") {
                     io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
@@ -185,21 +176,20 @@ function isValidString (string) {
 function getUsernamesList(room) {
     var usernamesList = new Array();
     if(room == "Lobby" || room == "") {
-        for (var i = 0 ; i <  io.sockets.clients().length ; i++) {
+        for (var i = 0 ; i < io.sockets.clients().length ; i++) {
             if(usersList[io.sockets.clients()[i].id]) {
                 usernamesList.push(usersList[io.sockets.clients()[i].id]);
             }
         }
-        return usernamesList;
     }
     else {
-        for (var i = 0 ; i <  io.sockets.clients(room).length ; i++) {
+        for (var i = 0 ; i < io.sockets.clients(room).length ; i++) {
             if(usersList[io.sockets.clients()[i].id]) {
                 usernamesList.push(usersList[io.sockets.clients(room)[i].id]);
             }
         }
-        return usernamesList;
     }
+    return usernamesList;
 }
 
 function getUserRoomList(socket) {
