@@ -3,9 +3,24 @@ var socket = io.connect();
 //keep a list of rooms that the client is in so we don't make a lot of server requests
 var userRoomsList;
 
+/**
+ * From http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+ * Provides a means to escape user inputted messages
+ * The rationale to use this is that this is a cleaner, simple, and effective way to escape HTML entities
+ * than some hack way with jQuery functions (eg. text()) that may not work cross browsers.
+ **/
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
 function addMessage(msg, roomName, username) {
     //append to the right div/ie to the right room
-    $('div#chatContainer div#room-' + roomName + ' div.chatEntries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + msg + '</span></div>');
+    $('div#chatContainer div#room-' + roomName + ' div.chatEntries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span></div>');
 
     var roomChatEntries = $('div#chatContainer div#room-' + roomName + ' div.chatEntries');
     if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200) ) {
