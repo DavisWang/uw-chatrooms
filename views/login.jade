@@ -11,4 +11,6 @@ block content
 				input#usernameInput.form-control(type="text", name="username", placeholder="Enter a name and start chatting!")
 				span.input-group-btn
 					button#setUsername.btn.btn-info(type="submit button") Go!
-					
+		
+		if (usernameInvalid) 
+			div.label.label-danger Please enter a valid name (a-z,A-Z,0-9,-,_)
