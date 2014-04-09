@@ -105,14 +105,6 @@ div#moreMsgs {
 	margin-bottom: 3px;
 }
 
-.nav-tabs>li {
-	margin-bottom: 0px;
-}
-
-.nav-tabs>li>a {
-	padding: 10px 15px 6px 15px;
-}
-
 .nav-pills>li.active>a,
 .nav-pills>li.active>a:hover,
 .nav-pills>li.active>a:focus {
@@ -128,7 +120,6 @@ div#tabContainer {
 
 ul#tab {
 	border-bottom: 0;
-	overflow-x: scroll;
 	overflow-y: hidden;
 	white-space:nowrap;
 }
