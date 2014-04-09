@@ -69,7 +69,7 @@ div.well {
 	border-radius: 15px;
 	margin-right: 10px;
 	margin-left: 10px;
-	border: 3px dashed #e3e3e3;
+	border: 3px #e3e3e3;
 }
 
 nav.navbar {
@@ -101,6 +101,10 @@ div#moreMsgs {
 
 /*Tab related css */
 
+.nav-pills {
+	margin-bottom: 3px;
+}
+
 .nav-tabs>li {
 	margin-bottom: 0px;
 }
@@ -109,14 +113,11 @@ div#moreMsgs {
 	padding: 10px 15px 6px 15px;
 }
 
-.nav-tabs>li.active>a,
-.nav-tabs>li.active>a:hover,
-.nav-tabs>li.active>a:focus {
-	border-top: 2px dashed #e3e3e3;
-	border-right: 2px dashed #e3e3e3;
-	border-left: 2px dashed #e3e3e3;
-	border-radius: 4px 4px 0 0;
-	background-color: #eee;
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:hover,
+.nav-pills>li.active>a:focus {
+	color: #428bca;
+	background-color: #e3e3e3;
 	display: inline-block;
 }
 

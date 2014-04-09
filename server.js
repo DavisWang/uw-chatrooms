@@ -214,7 +214,7 @@ app.post('/main', function(req, res){
         res.render('main.jade');
     }
     else {
-        res.render('login.jade',{"usernameInvalid": true});
+        res.render('login.jade', {"usernameInvalid": true});
     }
 });
 

@@ -50,7 +50,6 @@ function setUsername() {
     $("#loginForm").submit();
 }
 
-
 socket.on('sendMessageResponse', function (data) {
     addMessage(data['message'], data['roomName'], data['username']);
 });
@@ -85,7 +84,6 @@ socket.on('roomInvite', function (data) {
     window.alert("User " + data.inviter + " invites you to " + data.roomName);
     socket.emit('acceptInvitation', data.roomName);
 });
-
 
 socket.on('createRoomResponse', function (data) {
     if(data.created) {
@@ -159,7 +157,6 @@ socket.on('createRoomResponse', function (data) {
         }
     }
 });
-
 
 $(function() {
 
