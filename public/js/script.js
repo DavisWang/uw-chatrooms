@@ -3,6 +3,9 @@ var socket = io.connect();
 //keep a list of rooms that the client is in so we don't make a lot of server requests
 var userRoomsList;
 
+//the current room that the user is in.
+var currentRoom;
+
 /**
  * From http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
  * Provides a means to escape user inputted messages
@@ -36,12 +39,11 @@ function addMessage(msg, roomName, username) {
 function sentMessage() {
     if ($('#messageInput').val() != "") {
         var messageBody = $('#messageInput').val();
-        var roomName = $('ul#tab li.active').text();
-        var data = {messageBody : messageBody, messageRoom : roomName};
+        var data = {messageBody : messageBody, messageRoom : currentRoom};
         socket.emit('sendMessage', data);
 
         //this current implementation is that when you send a message, for you, the message doesn't go to the server, only for others
-        addMessage(messageBody, roomName ,"Me");
+        addMessage(messageBody, currentRoom ,"Me");
         $('#messageInput').val(''); //clear the input field
     }
 }
@@ -100,7 +102,7 @@ socket.on('createRoomResponse', function (data) {
             $(this).tab('show');
             $('div.usersList').hide(); //hide all other usersLists
             $('div#usersList-' + data.roomName).show(); //show the specific room usersList
-
+            currentRoom = data.roomName;
         });
 
         //close tab functionality
@@ -111,6 +113,7 @@ socket.on('createRoomResponse', function (data) {
             socket.emit('leaveRoom', data.roomName);
 
             $('ul#tab a:contains("Lobby")').click(); //go back to the lobby
+            currentRoom = "Lobby";
         });
 
         //attach dnd event listeners
@@ -162,6 +165,9 @@ $(function() {
 
     jQuery.event.props.push('dataTransfer');
 
+    //the default active room is Lobby
+    currentRoom = "Lobby";
+
     $('#messageInput').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
@@ -174,6 +180,7 @@ $(function() {
         $(this).tab('show');
         $('div.usersList').hide(); //hide all other usersLists
         $('div#usersList-Lobby').show(); //show the main usersList
+        currentRoom = "Lobby"
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
