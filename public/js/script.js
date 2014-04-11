@@ -6,6 +6,9 @@ var userRoomsList;
 //the current room that the user is in.
 var currentRoom;
 
+//the client's username
+var myUsername;
+
 /**
  * From http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
  * Provides a means to escape user inputted messages
@@ -48,10 +51,6 @@ function sentMessage() {
     }
 }
 
-function setUsername() {
-    $("#loginForm").submit();
-}
-
 socket.on('sendMessageResponse', function (data) {
     addMessage(data['message'], data['roomName'], data['username']);
 });
@@ -64,21 +63,28 @@ socket.on('updateRoomsList', function (roomsList) {
     userRoomsList = roomsList;
 });
 
+socket.on('saveUsername', function (data) {
+    myUsername = data.clientUsername;
+});
+
 socket.on('loadUsersList', function (data) {
     $('#usersList-' + data.roomName).empty();
+		$('#usersList-' + data.roomName).append('<div class="myname blue" draggable="true"><span class="glyphicon glyphicon-user blue"></span>' + myUsername + " (You)" + '</div>');
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
-        $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+				if (data.usernamesList[i] != myUsername) {
+					$('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
 
-        var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
-        usernameElement.on({
-            dragstart: function(e) {
-                e.dataTransfer.setData("username", $(this).text());
-                $(this).css('opacity', '0.5');
-            },
-            dragend: function(e) {
-                $(this).css('opacity', '1');
-            },
-        });
+					var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
+					usernameElement.on({
+							dragstart: function(e) {
+									e.dataTransfer.setData("username", $(this).text());
+									$(this).css('opacity', '0.4');
+							},
+							dragend: function(e) {
+									$(this).css('opacity', '1');
+							},
+					});
+				}
     }
 });
 
@@ -213,6 +219,5 @@ $(function() {
     });
     //Modal box login ends here
 
-    $('#setUsername').click(function() {setUsername()});
     $('#submit').click(function() {sentMessage();});
 });

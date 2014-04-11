@@ -149,3 +149,13 @@ div#chatContainer div.tab-pane {
 	width: 100%;
 	height: 95%;
 }
+
+div.myname {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.blue{
+	color: #428bca;
+}
