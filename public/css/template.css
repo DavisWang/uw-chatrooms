@@ -1,161 +1,158 @@
 html, body.noscroll {
-	overflow:hidden;
-	height: 100%;
-	width: 100%;
-	font-family: "Kreon", "Helvetica", serif;
-	font-weight: 300;
-	font-size: 16px;
+  overflow:hidden;
+  height: 100%;
+  width: 100%;
+  font-family: "Kreon", "Helvetica", serif;
+  font-weight: 300;
+  font-size: 16px;
 }
 
 div.container {
-	height: inherit;
+  height: inherit;
 }
 
 div.message {
-	border-radius: 15px;
-	padding: 10px;
-	margin-bottom: 10px;
-	margin-top: 10px;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 div.chatPanel {
-	/* The margin-top pushes the chatPanel below the navbar */
-	margin-top: 71px;
-	height: 90%;
+  /* The margin-top pushes the chatPanel below the navbar */
+  margin-top: 71px;
+  height: 90%;
 }
 
 div#chatContainer {
-	height: 90%;
+  height: 90%;
 }
 
 div.chatEntries {
-	height: inherit;
-	overflow: auto;
-	overflow-x: hidden;
+  height: inherit;
+  overflow: auto;
+  overflow-x: hidden;
 }
 
 div#usersConnected {
-	height: inherit;
+  height: inherit;
 }
 
 div#numConnected {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 div#chatControls {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	position: absolute;
-	bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: absolute;
+  bottom: 10px;
 }
 
 
 span.glyphicon-user {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 div.username {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #777;
 }
 
 div.username:hover {
-	color: #000;
+  color: #000;
 }
 
 div.well {
-	border-radius: 15px;
-	margin-right: 10px;
-	margin-left: 10px;
-	border: 3px #e3e3e3;
+  border-radius: 15px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border: 3px #e3e3e3;
 }
 
 nav.navbar {
-	font-size: 22px;
+  font-size: 22px;
 }
 
 a.navbar-brand {
-	font-weight: 400;
+  font-weight: 400;
 }
 
 div#moreMsgs {
-	position: absolute;
-	background-color: #ddd;
-	left: 40%;
-	right: 40%;
-	bottom: 60px;
-	border-radius: 20px;
-	text-align: center;
-	border: #eee dotted 3px;
-	display: none;
-	z-index: 5;
+  position: absolute;
+  background-color: #ddd;
+  left: 40%;
+  right: 40%;
+  bottom: 60px;
+  border-radius: 20px;
+  text-align: center;
+  border: #eee dotted 3px;
+  display: none;
+  z-index: 5;
 }
 
 /* Create Room Modal related css */
 
 #createRoomModal input#modalInput {
-	width: 80%;
+  width: 80%;
 }
 
 /*Tab related css */
 
 .nav-pills {
-	margin-bottom: 3px;
+  margin-bottom: 3px;
 }
 
 .nav-pills>li.active>a,
 .nav-pills>li.active>a:hover,
 .nav-pills>li.active>a:focus {
-	color: #428bca;
-	background-color: #e3e3e3;
-	display: inline-block;
+  color: #428bca;
+  background-color: #e3e3e3;
+  display: inline-block;
 }
 
 div#tabContainer {
-	margin-left: 10px;
-	margin-right: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 ul#tab {
-	border-bottom: 0;
-	overflow-y: hidden;
-	white-space:nowrap;
+  border-bottom: 0;
+  overflow-y: hidden;
+  white-space:nowrap;
 }
 
 ul#tab li[class*="span"] {
-	display: inline-block;
-	float: none;
+  display: inline-block;
+  float: none;
 }
 
 .over {
-	background-color: #eee;
+  background-color: #eee;
 }
 
 span.glyphicon-remove {
-	top: 3px;
-	left: 3px;
-	color: #bbb;
+  top: 3px;
+  left: 3px;
+  color: #bbb;
 }
 
 span.glyphicon-remove:hover {
-	color: #555;
+  color: #555;
 }
 
 /* Room related CSS */
 
 div#chatContainer div.tab-pane {
-	width: 100%;
-	height: 95%;
+  width: 100%;
+  height: 95%;
 }
 
-div.myname {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.blue{
-	color: #428bca;
+div.myUsername {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #428bca;
 }

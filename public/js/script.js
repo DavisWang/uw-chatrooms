@@ -69,22 +69,22 @@ socket.on('saveUsername', function (data) {
 
 socket.on('loadUsersList', function (data) {
     $('#usersList-' + data.roomName).empty();
-		$('#usersList-' + data.roomName).append('<div class="myname blue" draggable="true"><span class="glyphicon glyphicon-user blue"></span>' + myUsername + " (You)" + '</div>');
-    for (var i = 0 ; i < data.usernamesList.length ; i++) {
-				if (data.usernamesList[i] != myUsername) {
-					$('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+    $('#usersList-' + data.roomName).append('<div class="myUsername"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
+      for (var i = 0 ; i < data.usernamesList.length ; i++) {
+        if (data.usernamesList[i] != myUsername) {
+          $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
 
-					var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
-					usernameElement.on({
-							dragstart: function(e) {
-									e.dataTransfer.setData("username", $(this).text());
-									$(this).css('opacity', '0.4');
-							},
-							dragend: function(e) {
-									$(this).css('opacity', '1');
-							},
-					});
-				}
+          var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
+          usernameElement.on({
+              dragstart: function(e) {
+                  e.dataTransfer.setData("username", $(this).text());
+                  $(this).css('opacity', '0.4');
+              },
+              dragend: function(e) {
+                  $(this).css('opacity', '1');
+              },
+          });
+      }
     }
 });
 

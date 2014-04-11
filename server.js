@@ -32,8 +32,8 @@ io.sockets.on('connection', function (socket) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
     }
-		
-		socket.emit('saveUsername', {'clientUsername': username});
+    
+    socket.emit('saveUsername', {'clientUsername': username});
     io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
     io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
 
