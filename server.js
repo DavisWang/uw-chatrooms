@@ -2,6 +2,9 @@ var express = require('express'), app = express()
 , http = require('http')
 , server = http.createServer(app).listen(process.env.PORT || 3000)
 , io = require('socket.io').listen(server);
+
+io.set('log level', 1);
+
 var jade = require('jade');
 
 app.set('views', __dirname + '/views');
@@ -44,11 +47,10 @@ io.sockets.on('connection', function (socket) {
                 socket.broadcast.to('').emit('sendMessageResponse', data);
             }
             else {
-                console.log("broadcast room: " + clientData.messageRoom);
                 socket.broadcast.to(clientData.messageRoom).emit('sendMessageResponse', data);
             }
 
-            console.log('user ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
+            console.log('User ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
         });
     });
 
@@ -80,11 +82,10 @@ io.sockets.on('connection', function (socket) {
             socket.join(roomName);
 
             socket.emit('updateRoomsList', getUserRoomList(socket));
-            console.log("sending room list to client: " + getUserRoomList(socket));
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Added user: " + username + " to room: " + roomName);
-            console.log("User is in rooms: ");
+            console.log("User: " + username + " is in rooms: ");
             console.log(io.roomClients[socket.id]);
         });
     });
@@ -97,7 +98,7 @@ io.sockets.on('connection', function (socket) {
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log("Removed user: " + username + " from room: " + roomName);
-            console.log("User is in rooms: ");
+            console.log("User: " + username + " is in rooms: ");
             console.log(io.sockets.manager.roomClients[socket.id]);
         });
     });
@@ -131,18 +132,13 @@ io.sockets.on('connection', function (socket) {
 
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 socket.leave(room);
-                console.log("Leaving room: " + room);
 
                 if (room == "") {
-                    console.log("Broadcasting to Lobby");
                     socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(''));
                 }
                 else {
-                    console.log("Broadcasting to room:" + room);
                     socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(room.substring(1)));
                 }
-
-                console.log(io.sockets.manager.roomClients[socket.id]);
             }
 
             console.log("usersList was ");
