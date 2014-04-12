@@ -28,7 +28,6 @@ var numConnected = 0;
 
 io.sockets.on('connection', function (socket) {
 
-    //TODO: bug connect with valid username, shutdown server, restart server, username is now null
     socket.set('username', username);
     console.log('User ' + username + ' connected');
 
@@ -154,6 +153,7 @@ io.sockets.on('connection', function (socket) {
             console.log(usersList);
             numConnected--;
             io.sockets.emit('numConnected', {'numConnected' : numConnected});
+            console.log("Number of users left on the service: " + numConnected);
 
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 if(room == "") {

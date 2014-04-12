@@ -3,7 +3,7 @@ extends base
 block head
 
 block content
-	div#tabContainer.col-xs-9
+	div#tab-container.col-xs-9
 		ul#tab.nav.nav-pills
 			li.span
 				a#addRoom(href="#", data-toggle="tab addRoomModal")
@@ -11,26 +11,26 @@ block content
 			li.span
 				a(href="#room-Lobby", data-toggle="tab") Lobby
 
-	div#chatContainer.col-xs-9.well.tab-content
-		div#moreMsgs There are more messages!
+	div#chat-panel.col-xs-9.well.tab-content
+		div#more-msgs There are more messages!
 		div#room-Lobby.tab-pane
-			div.chatEntries
-		div#chatControls.input-group
+			div.chat-entries
+		div#chat-controls.input-group
 			input#messageInput.form-control(type="text")
 			span.input-group-btn
 				button#submit.btn.btn-info(type="button submit") Send!
-	div#usersConnected.col-xs-2.well
-		div#numConnected
+	div#side-panel.col-xs-2.well
+		div#num-connected
 		div#usersList-Lobby.usersList
 
-	div#createRoomModal.modal.fade(tabindex="-1", role="dialog", aria-hidden="true" aria-labelledby="createRoomModalLabel")
+	div#create-room-modal.modal.fade(tabindex="-1", role="dialog", aria-hidden="true" aria-labelledby="create-room-modal-label")
 		div.modal-dialog.modal-sm
 			div.modal-content
 				div.modal-header
 					button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
-					h4#createRoomModalLabel.modal-title Create a room!
+					h4#create-room-modal-label.modal-title Create a room!
 				div.modal-body
-					input#modalInput(type="text" placeholder="Enter the room name here")
+					input#create-room-modal-input(type="text" placeholder="Enter the room name here")
 				div.modal-footer
 					button#roomModalCloseButton.btn.btn-default(type="button" data-dismiss="modal") Close
 					button#createRoomButton.btn.btn-primary Create room!

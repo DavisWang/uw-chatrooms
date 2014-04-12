@@ -18,31 +18,31 @@ div.message {
   margin-top: 10px;
 }
 
-div.chatPanel {
-  /* The margin-top pushes the chatPanel below the navbar */
+div.chat-container {
+  /* The margin-top pushes the chat panel below the navbar */
   margin-top: 71px;
   height: 90%;
 }
 
-div#chatContainer {
+div#chat-panel {
   height: 90%;
 }
 
-div.chatEntries {
+div.chat-entries {
   height: inherit;
   overflow: auto;
   overflow-x: hidden;
 }
 
-div#usersConnected {
+div#side-panel {
   height: inherit;
 }
 
-div#numConnected {
+div#num-connected {
   font-weight: bold;
 }
 
-div#chatControls {
+div#chat-controls {
   margin-top: 10px;
   margin-bottom: 10px;
   position: absolute;
@@ -79,7 +79,7 @@ a.navbar-brand {
   font-weight: 400;
 }
 
-div#moreMsgs {
+div#more-msgs {
   position: absolute;
   background-color: #ddd;
   left: 40%;
@@ -92,7 +92,7 @@ div#moreMsgs {
   z-index: 5;
 }
 
-div.myUsername {
+div.my-username {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -101,7 +101,7 @@ div.myUsername {
 
 /* Create Room Modal related css */
 
-#createRoomModal input#modalInput {
+#create-room-modal input#create-room-modal-input {
   width: 80%;
 }
 
@@ -119,7 +119,7 @@ div.myUsername {
   display: inline-block;
 }
 
-div#tabContainer {
+div#tab-container {
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -151,7 +151,7 @@ span.glyphicon-remove:hover {
 
 /* Room related CSS */
 
-div#chatContainer div.tab-pane {
+div#chat-panel div.tab-pane {
   width: 100%;
   height: 95%;
 }

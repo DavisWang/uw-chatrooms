@@ -26,16 +26,16 @@ function escapeHtml(unsafe) {
 
 function addMessage(msg, roomName, username) {
     //append to the right div/ie to the right room
-    $('div#chatContainer div#room-' + roomName + ' div.chatEntries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span></div>');
+    $('div#chat-panel div#room-' + roomName + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span></div>');
 
-    var roomChatEntries = $('div#chatContainer div#room-' + roomName + ' div.chatEntries');
+    var roomChatEntries = $('div#chat-panel div#room-' + roomName + ' div.chat-entries');
     if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200) ) {
         roomChatEntries.animate({
             scrollTop: roomChatEntries[0].scrollHeight
         }, 200);
     }
     else {
-        $('#moreMsgs').filter(':hidden').fadeIn(1000).delay(3000).fadeOut(3000);
+        $('#more-msgs').filter(':hidden').fadeIn(1000).delay(3000).fadeOut(3000);
     }
 }
 
@@ -56,7 +56,7 @@ socket.on('sendMessageResponse', function (data) {
 });
 
 socket.on('numConnected', function (data) {
-    $('#numConnected').html('Users online: ' + data.numConnected);
+    $('#num-connected').html('Users online: ' + data.numConnected);
 });
 
 socket.on('updateRoomsList', function (roomsList) {
@@ -69,7 +69,7 @@ socket.on('saveUsername', function (data) {
 
 socket.on('loadUsersList', function (data) {
     $('#usersList-' + data.roomName).empty();
-    $('#usersList-' + data.roomName).append('<div class="myUsername"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
+    $('#usersList-' + data.roomName).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
       for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.usernamesList[i] != myUsername) {
           $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
@@ -95,10 +95,10 @@ socket.on('roomInvite', function (data) {
 
 socket.on('createRoomResponse', function (data) {
     if(data.created) {
-        //chatContainer DOM creation
-        $('div#chatContainer').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chatEntries"></div></div>');
+        //chat container DOM creation
+        $('div#chat-panel').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chat-entries"></div></div>');
         //room userList DOM creation
-        $('div#usersConnected').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
+        $('div#side-panel').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
 
@@ -123,7 +123,7 @@ socket.on('createRoomResponse', function (data) {
         });
 
         //attach dnd event listeners
-        $('#tabContainer .roomTab:contains(' + data.roomName + ') a').on({
+        $('#tab-container .roomTab:contains(' + data.roomName + ') a').on({
             dragleave: function(e) {
                 $(this).removeClass('over');
                 e.preventDefault();
@@ -200,18 +200,18 @@ $(function() {
 
     //Modal related functionality
     $('#addRoom').click(function () {
-        $('#createRoomModal').modal('show')
+        $('#create-room-modal').modal('show')
     });
 
     $('#createRoomButton').click(function () {
-        var roomName = $('input#modalInput').val();
+        var roomName = $('input#create-room-modal-input').val();
         if(roomName) {
             socket.emit('createRoom', roomName);
-            $('input#modalInput').val('');
+            $('input#create-room-modal-input').val('');
         }
     });
 
-    $("#modalInput").keypress(function(event){
+    $("#create-room-modal-input").keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
             $("#createRoomButton").click();
