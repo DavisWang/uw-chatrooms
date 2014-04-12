@@ -40,14 +40,14 @@ function addMessage(msg, roomName, username) {
 }
 
 function sentMessage() {
-    if ($('#messageInput').val() != "") {
-        var messageBody = $('#messageInput').val();
+    if ($('#message-input').val() != "") {
+        var messageBody = $('#message-input').val();
         var data = {messageBody : messageBody, messageRoom : currentRoom};
         socket.emit('sendMessage', data);
 
         //this current implementation is that when you send a message, for you, the message doesn't go to the server, only for others
         addMessage(messageBody, currentRoom ,"Me");
-        $('#messageInput').val(''); //clear the input field
+        $('#message-input').val(''); //clear the input field
     }
 }
 
@@ -143,7 +143,7 @@ socket.on('createRoomResponse', function (data) {
             }
         });
 
-        $('#roomModalCloseButton').click(); //close the window
+        $('#room-modal-close-button').click(); //close the window
 
         //subscribe to room
         socket.emit('joinRoom', data.roomName);
@@ -174,7 +174,7 @@ $(function() {
     //the default active room is Lobby
     currentRoom = "Lobby";
 
-    $('#messageInput').keypress(function(event){
+    $('#message-input').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
             $("#submit").click();
@@ -199,11 +199,11 @@ $(function() {
     });
 
     //Modal related functionality
-    $('#addRoom').click(function () {
+    $('#add-room').click(function () {
         $('#create-room-modal').modal('show')
     });
 
-    $('#createRoomButton').click(function () {
+    $('#create-room-buttom').click(function () {
         var roomName = $('input#create-room-modal-input').val();
         if(roomName) {
             socket.emit('createRoom', roomName);
@@ -214,7 +214,7 @@ $(function() {
     $("#create-room-modal-input").keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
-            $("#createRoomButton").click();
+            $("#create-room-buttom").click();
         }
     });
     //Modal box login ends here

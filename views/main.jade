@@ -6,7 +6,7 @@ block content
 	div#tab-container.col-xs-9
 		ul#tab.nav.nav-pills
 			li.span
-				a#addRoom(href="#", data-toggle="tab addRoomModal")
+				a#add-room(href="#")
 					span.glyphicon.glyphicon-plus
 			li.span
 				a(href="#room-Lobby", data-toggle="tab") Lobby
@@ -16,7 +16,7 @@ block content
 		div#room-Lobby.tab-pane
 			div.chat-entries
 		div#chat-controls.input-group
-			input#messageInput.form-control(type="text")
+			input#message-input.form-control(type="text")
 			span.input-group-btn
 				button#submit.btn.btn-info(type="button submit") Send!
 	div#side-panel.col-xs-2.well
@@ -32,8 +32,8 @@ block content
 				div.modal-body
 					input#create-room-modal-input(type="text" placeholder="Enter the room name here")
 				div.modal-footer
-					button#roomModalCloseButton.btn.btn-default(type="button" data-dismiss="modal") Close
-					button#createRoomButton.btn.btn-primary Create room!
+					button#room-modal-close-button.btn.btn-default(type="button" data-dismiss="modal") Close
+					button#create-room-buttom.btn.btn-primary Create room!
 
 block bottom
 	script(src="/socket.io/socket.io.js")
