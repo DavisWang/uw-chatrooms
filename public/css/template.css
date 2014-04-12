@@ -49,7 +49,6 @@ div#chatControls {
   bottom: 10px;
 }
 
-
 span.glyphicon-user {
   margin-right: 5px;
 }
@@ -91,6 +90,13 @@ div#moreMsgs {
   border: #eee dotted 3px;
   display: none;
   z-index: 5;
+}
+
+div.myUsername {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #428bca;
 }
 
 /* Create Room Modal related css */
@@ -148,11 +154,4 @@ span.glyphicon-remove:hover {
 div#chatContainer div.tab-pane {
   width: 100%;
   height: 95%;
-}
-
-div.myUsername {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #428bca;
 }

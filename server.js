@@ -22,6 +22,10 @@ app.configure(function() {
 var usersList = new Array();
 var usersListr = new Array();
 
+//length of the usersList, JS makes it difficult to get the
+//length of a dictionary, so we just store a separate variable
+var numConnected = 0;
+
 io.sockets.on('connection', function (socket) {
 
     //TODO: bug connect with valid username, shutdown server, restart server, username is now null
@@ -31,11 +35,12 @@ io.sockets.on('connection', function (socket) {
     if (typeof username !== 'undefined' && typeof username != null) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
+        numConnected++;
     }
     
     socket.emit('saveUsername', {'clientUsername': username});
     io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
-    io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
+    io.sockets.emit('numConnected', {'numConnected' : numConnected});
 
     socket.emit('updateRoomsList', getUserRoomList(socket));
 
@@ -129,7 +134,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function() {
         socket.get('username', function (error, username) {
             console.log('User ' + username + ' has disconnected');
-            io.sockets.emit('numConnected', {'numConnected' : io.sockets.clients().length});
 
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 socket.leave(room);
@@ -148,6 +152,8 @@ io.sockets.on('connection', function (socket) {
             delete usersList[socket.id];
             console.log("usersList is now ");
             console.log(usersList);
+            numConnected--;
+            io.sockets.emit('numConnected', {'numConnected' : numConnected});
 
             for (room in io.sockets.manager.roomClients[socket.id]) {
                 if(room == "") {
