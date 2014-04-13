@@ -1,5 +1,3 @@
-require("newrelic");
-
 var express = require('express'), app = express()
 , http = require('http')
 , server = http.createServer(app).listen(process.env.PORT || 3000)

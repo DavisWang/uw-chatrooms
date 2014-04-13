@@ -9,8 +9,7 @@
   "dependencies": {
     "jade": "~1.2.0",
     "socket.io": "~0.9.16",
-    "express": "~3.4.8",
-    "newrelic": ">=0.9"
+    "express": "~3.4.8"
   },
   "devDependencies": {},
   "scripts": {
