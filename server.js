@@ -5,6 +5,10 @@ if(process.env.NODETIME_ACCOUNT_KEY) {
     });
 }
 
+if(process.env.NEW_RELIC_LICENSE_KEY) {
+    require('newrelic');
+}
+
 var express = require('express'), app = express()
 , http = require('http')
 , server = http.createServer(app).listen(process.env.PORT || 3000)
