@@ -238,6 +238,8 @@ app.get('/main', function(req, res){
 });
 
 app.get('/', function(req, res){
-    console.log("GET Request made to " + '/');
+    if (!~req.header('user-agent').indexOf('NewRelicPinger')) {
+        console.log("GET Request made to " + '/');
+    }
     res.render('login.jade');
 });
