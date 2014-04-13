@@ -1,3 +1,10 @@
+if(process.env.NODETIME_ACCOUNT_KEY) {
+    require('nodetime').profile({
+      accountKey: process.env.NODETIME_ACCOUNT_KEY,
+      appName: 'uw-chatrooms'
+    });
+}
+
 var express = require('express'), app = express()
 , http = require('http')
 , server = http.createServer(app).listen(process.env.PORT || 3000)

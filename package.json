@@ -9,7 +9,8 @@
   "dependencies": {
     "jade": "~1.2.0",
     "socket.io": "~0.9.16",
-    "express": "~3.4.8"
+    "express": "~3.4.8",
+    "nodetime": "^0.8.15"
   },
   "devDependencies": {},
   "scripts": {
