@@ -51,6 +51,11 @@ function sentMessage() {
     }
 }
 
+socket.on('disconnect', function (data) {
+    console.log('reconnect');
+    socket.socket.reconnect();
+});
+
 socket.on('serverRestart', function (data) {
     window.location.href = data.url;
 });

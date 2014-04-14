@@ -14,7 +14,7 @@ var express = require('express'), app = express()
 , server = http.createServer(app).listen(process.env.PORT || 3000)
 , io = require('socket.io').listen(server);
 
-io.set('log level', 1);
+// io.set('log level', 1);
 
 var jade = require('jade');
 
