@@ -46,15 +46,18 @@ io.sockets.on('connection', function (socket) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
         numConnected++;
+        console.log(numConnected + ' connected');
+
+        socket.emit('saveUsername', {'clientUsername': username});
+        io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
+        io.sockets.emit('numConnected', {'numConnected' : numConnected});
+
+        socket.emit('updateRoomsList', getUserRoomList(socket));
     }
-    
-    socket.emit('saveUsername', {'clientUsername': username});
-    io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
-    io.sockets.emit('numConnected', {'numConnected' : numConnected});
-
-    socket.emit('updateRoomsList', getUserRoomList(socket));
-
-    console.log(io.sockets.clients().length + ' connected');
+    else {
+        console.log("Emitting serverRestart to socket: " + socket.id);
+        socket.emit("serverRestart", {'url' : '/error'});
+    }
 
     socket.on('sendMessage', function (clientData) {
         socket.get('username', function (error, name) {
@@ -142,39 +145,33 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function() {
-        socket.get('username', function (error, username) {
-            console.log('User ' + username + ' has disconnected');
+        if(usersList.hasOwnProperty(socket.id)) {
+            socket.get('username', function (error, username) {
 
-            for (room in io.sockets.manager.roomClients[socket.id]) {
-                socket.leave(room);
+                console.log('User ' + username + ' has disconnected');
 
-                if (room == "") {
-                    socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(''));
-                }
-                else {
-                    socket.broadcast.to(room).emit('loadUsersList', getUsernamesList(room.substring(1)));
-                }
-            }
+                console.log("usersList was ");
+                console.log(usersList);
+                delete usersListr[usersList[socket.id]]
+                delete usersList[socket.id];
+                console.log("usersList is now ");
+                console.log(usersList);
+                numConnected--;
+                io.sockets.emit('numConnected', {'numConnected' : numConnected});
+                console.log("Number of users left on the service: " + numConnected);
 
-            console.log("usersList was ");
-            console.log(usersList);
-            delete usersListr[usersList[socket.id]]
-            delete usersList[socket.id];
-            console.log("usersList is now ");
-            console.log(usersList);
-            numConnected--;
-            io.sockets.emit('numConnected', {'numConnected' : numConnected});
-            console.log("Number of users left on the service: " + numConnected);
-
-            for (room in io.sockets.manager.roomClients[socket.id]) {
-                if(room == "") {
-                    io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
+                for (room in io.sockets.manager.roomClients[socket.id]) {
+                    if(room == "") {
+                        socket.leave(room);
+                        io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
+                    }
+                    else {
+                        socket.leave(room.substring(1));
+                        io.sockets.emit('loadUsersList', {'roomName' : room.substring(1), 'usernamesList' : getUsernamesList(room.substring(1))});
+                    }
                 }
-                else {
-                    io.sockets.emit('loadUsersList', {'roomName' : room.substring(1), 'usernamesList' : getUsernamesList(room.substring(1))});
-                }
-            }
-        });
+            });
+        }
     });
 });
 
@@ -235,6 +232,11 @@ app.post('/main', function(req, res){
 app.get('/main', function(req, res){
     console.log("GET Request made to " + '/main');
     res.render('login.jade');
+});
+
+app.get('/error', function(req, res){
+    console.log("GET Request made to " + '/error');
+    res.render('login.jade', {'serverRestart': true});
 });
 
 app.get('/', function(req, res){

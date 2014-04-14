@@ -51,6 +51,10 @@ function sentMessage() {
     }
 }
 
+socket.on('serverRestart', function (data) {
+    window.location.href = data.url;
+});
+
 socket.on('sendMessageResponse', function (data) {
     addMessage(data['message'], data['roomName'], data['username']);
 });
