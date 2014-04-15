@@ -1,17 +1,6 @@
-if(process.env.NODETIME_ACCOUNT_KEY) {
-    require('nodetime').profile({
-      accountKey: process.env.NODETIME_ACCOUNT_KEY,
-      appName: 'uw-chatrooms'
-    });
-}
-
-if(process.env.NEW_RELIC_LICENSE_KEY) {
-    require('newrelic');
-}
-
 var express = require('express'), app = express()
 , http = require('http')
-, server = http.createServer(app).listen(process.env.PORT || 3000)
+, server = http.createServer(app).listen(process.env.OPENSHIFT_NODE_JS_PORT || 3000)
 , io = require('socket.io').listen(server);
 
 // io.set('log level', 1);
