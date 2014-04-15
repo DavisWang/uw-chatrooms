@@ -1,6 +1,9 @@
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000  
+, ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+
 var express = require('express'), app = express()
 , http = require('http')
-, server = http.createServer(app).listen(process.env.OPENSHIFT_NODE_JS_PORT || 3000)
+, server = http.createServer(app).listen(port, ip)
 , io = require('socket.io').listen(server);
 
 // io.set('log level', 1);
