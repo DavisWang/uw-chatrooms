@@ -6,7 +6,7 @@ var express = require('express'), app = express()
 , server = http.createServer(app).listen(port, ip)
 , io = require('socket.io').listen(server);
 
-// io.set('log level', 1);
+io.set('log level', 2);
 
 var jade = require('jade');
 
@@ -32,13 +32,13 @@ var numConnected = 0;
 io.sockets.on('connection', function (socket) {
 
     socket.set('username', username);
-    console.log('User ' + username + ' connected');
+    console.log(logStr() + 'User ' + username + ' connected');
 
     if (typeof username !== 'undefined' && typeof username != null) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
         numConnected++;
-        console.log(numConnected + ' connected');
+        console.log(logStr() + numConnected + ' connected');
 
         socket.emit('saveUsername', {'clientUsername': username});
         io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
@@ -47,7 +47,7 @@ io.sockets.on('connection', function (socket) {
         socket.emit('updateRoomsList', getUserRoomList(socket));
     }
     else {
-        console.log("Emitting serverRestart to socket: " + socket.id);
+        console.log(logStr() + "Emitting serverRestart to socket: " + socket.id);
         socket.emit("serverRestart", {'url' : '/error'});
     }
 
@@ -61,7 +61,7 @@ io.sockets.on('connection', function (socket) {
                 socket.broadcast.to(clientData.messageRoom).emit('sendMessageResponse', data);
             }
 
-            console.log('User ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
+            console.log(logStr() + 'User ' + name + ' send this : ' + clientData.messageBody + " to room: " + clientData.messageRoom);
         });
     });
 
@@ -79,7 +79,7 @@ io.sockets.on('connection', function (socket) {
                 errorCode = 3;
             }
             else {
-                console.log("User " + name + " created room name: " + roomName);
+                console.log(logStr() + "User " + name + " created room name: " + roomName);
                 created = true;
             }
             var data = {'created' : created, 'roomName' : roomName, 'errorCode' : errorCode};
@@ -95,9 +95,9 @@ io.sockets.on('connection', function (socket) {
             socket.emit('updateRoomsList', getUserRoomList(socket));
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
-            console.log("Added user: " + username + " to room: " + roomName);
-            console.log("User: " + username + " is in rooms: ");
-            console.log(io.roomClients[socket.id]);
+            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
+            console.log(logStr() + "User: " + username + " is in rooms: ");
+            console.log(logStr() + io.roomClients[socket.id]);
         });
     });
 
@@ -108,9 +108,9 @@ io.sockets.on('connection', function (socket) {
             socket.emit('updateRoomsList', getUserRoomList(socket));
 
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
-            console.log("Removed user: " + username + " from room: " + roomName);
-            console.log("User: " + username + " is in rooms: ");
-            console.log(io.sockets.manager.roomClients[socket.id]);
+            console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
+            console.log(logStr() + "User: " + username + " is in rooms: ");
+            console.log(logStr() + io.sockets.manager.roomClients[socket.id]);
         });
     });
 
@@ -125,7 +125,7 @@ io.sockets.on('connection', function (socket) {
                 io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
             }
             else {
-                console.log("Cannot invite user: " + data.username + " to room: " + data.roomName);
+                console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
                 //TODO emit a message to the socket of an error
             }
         });
@@ -140,17 +140,17 @@ io.sockets.on('connection', function (socket) {
         if(usersList.hasOwnProperty(socket.id)) {
             socket.get('username', function (error, username) {
 
-                console.log('User ' + username + ' has disconnected');
+                console.log(logStr() + 'User ' + username + ' has disconnected');
 
-                console.log("usersList was ");
-                console.log(usersList);
+                console.log(logStr() + "usersList was ");
+                console.log(logStr() + usersList);
                 delete usersListr[usersList[socket.id]]
                 delete usersList[socket.id];
-                console.log("usersList is now ");
-                console.log(usersList);
+                console.log(logStr() + "usersList is now ");
+                console.log(logStr() + usersList);
                 numConnected--;
                 io.sockets.emit('numConnected', {'numConnected' : numConnected});
-                console.log("Number of users left on the service: " + numConnected);
+                console.log(logStr() + "Number of users left on the service: " + numConnected);
 
                 for (room in io.sockets.manager.roomClients[socket.id]) {
                     if(room == "") {
@@ -166,6 +166,10 @@ io.sockets.on('connection', function (socket) {
         }
     });
 });
+
+function logStr() {
+    return 'uwcr - ' + new Date().toUTCString() + ' - ';
+}
 
 //Determines whether the given string is a proper username or room
 //alphanumeric + underscore + hyphen
@@ -210,10 +214,10 @@ function getUserRoomList(socket) {
 
 var username;
 app.post('/main', function(req, res){
-    console.log("POST Request made to " + '/main');
+    console.log(logStr() + "POST Request made to " + '/main');
     username = req.body.username;
     if(isValidString(username) && !usersListr[username]) {
-        console.log("User logged in as " + username);
+        console.log(logStr() + "User logged in as " + username);
         res.render('main.jade');
     }
     else {
@@ -222,18 +226,16 @@ app.post('/main', function(req, res){
 });
 
 app.get('/main', function(req, res){
-    console.log("GET Request made to " + '/main');
+    console.log(logStr() + "GET Request made to " + '/main');
     res.render('login.jade');
 });
 
 app.get('/error', function(req, res){
-    console.log("GET Request made to " + '/error');
+    console.log(logStr() + "GET Request made to " + '/error');
     res.render('login.jade', {'serverRestart': true});
 });
 
 app.get('/', function(req, res){
-    if (!~req.header('user-agent').indexOf('NewRelicPinger')) {
-        console.log("GET Request made to " + '/');
-    }
+    console.log(logStr() + "GET Request made to " + '/');
     res.render('login.jade');
 });
