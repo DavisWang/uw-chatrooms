@@ -1,6 +1,6 @@
 {
   "name": "uw-chatrooms",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "UW Chatrooms",
   "main": "server.js",
   "directories": {
