@@ -118,10 +118,8 @@ io.sockets.on('connection', function (socket) {
     //data.roomName: the room to invite to
     socket.on('inviteUser', function (data) {
         socket.get('username', function (error, username) {
-            //TODO notify the target client with a modal
-            //do data validation here
-            //cannot invite youself, cannot invite someone already in room
-            if (data.username != username && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+            //cannot invite someone already in room
+            if (!io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
                 io.sockets.socket(usersListr[data.username]).emit('roomInvite', {'inviter' : username, 'roomName' : data.roomName});
             }
             else {
