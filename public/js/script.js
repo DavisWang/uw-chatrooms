@@ -25,6 +25,19 @@ function escapeHtml(unsafe) {
  }
 
 function addMessage(msg, roomName, username) {
+
+    //check if user is in the room. If not, add 1 new unread message.
+    if(currentRoom!=roomName){
+      var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
+      userRoomsList[index].numNewMsgs++;
+      //show badge if it is hidden
+      if($('#'+roomName+'-badge').is(":hidden")){
+        // $('#'+roomName+'-badge').parent().css("background-color", "#f5f5f5");
+        $('#'+roomName+'-badge').show();
+      }
+      $('#'+roomName+'-badge').text(userRoomsList[index].numNewMsgs);
+    }
+
     //append to the right div/ie to the right room
     $('div#chat-panel div#room-' + roomName + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span></div>');
 
@@ -68,8 +81,8 @@ socket.on('numConnected', function (data) {
     $('#num-connected').html('Users online: ' + data.numConnected);
 });
 
-socket.on('updateRoomsList', function (roomsList) {
-    userRoomsList = roomsList;
+socket.on('initRoomsList', function (roomsList) {
+    userRoomsList = [{'roomName': roomsList[0], numNewMsgs: 0}];
 });
 
 socket.on('saveUsername', function (data) {
@@ -104,12 +117,16 @@ socket.on('roomInvite', function (data) {
 
 socket.on('createRoomResponse', function (data) {
     if(data.created) {
+        //adds room to client's userRoomsList array
+        userRoomsList.push({'roomName' : data.roomName, 'numNewMsgs': 0});
+        
         //chat container DOM creation
         $('div#chat-panel').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chat-entries"></div></div>');
         //room userList DOM creation
         $('div#side-panel').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
-        $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">'+ data.roomName +'<span class="glyphicon glyphicon-remove"></span></a></li>');
+        $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">' +
+          '<span id = "' + data.roomName + '-badge" class="badge badge-user"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
 
         //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
@@ -118,6 +135,11 @@ socket.on('createRoomResponse', function (data) {
             $('div.usersList').hide(); //hide all other usersLists
             $('div#usersList-' + data.roomName).show(); //show the specific room usersList
             currentRoom = data.roomName;
+            
+            //hide badge for the room after user clicks on the room
+            var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
+            userRoomsList[index].numNewMsgs = 0;
+            $('#'+currentRoom+'-badge').hide();						
         });
 
         //close tab functionality
@@ -129,6 +151,10 @@ socket.on('createRoomResponse', function (data) {
 
             $('ul#tab a:contains("Lobby")').click(); //go back to the lobby
             currentRoom = "Lobby";
+            
+            //removes room from client's userRoomsList array
+            var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(data.roomName);
+            userRoomsList.splice(index, 1);
         });
 
         //attach dnd event listeners
@@ -195,7 +221,12 @@ $(function() {
         $(this).tab('show');
         $('div.usersList').hide(); //hide all other usersLists
         $('div#usersList-Lobby').show(); //show the main usersList
-        currentRoom = "Lobby"
+        currentRoom = "Lobby";
+        
+        //hide badge for the room after user clicks on the room
+        var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
+        userRoomsList[index].numNewMsgs = 0;
+        $('#'+currentRoom+'-badge').hide();
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');

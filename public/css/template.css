@@ -150,6 +150,10 @@ span.glyphicon-remove:hover {
   color: #555;
 }
 
+span.badge-user{
+  margin-right: 3px;
+}
+
 /* Room related CSS */
 
 div#chat-panel div.tab-pane {

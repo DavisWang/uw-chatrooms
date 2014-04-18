@@ -44,7 +44,7 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('loadUsersList', {'roomName' : 'Lobby', 'usernamesList' : getUsernamesList("Lobby")});
         io.sockets.emit('numConnected', {'numConnected' : numConnected});
 
-        socket.emit('updateRoomsList', getUserRoomList(socket));
+        socket.emit('initRoomsList', getUserRoomList(socket));
     }
     else {
         console.log(logStr() + "Emitting serverRestart to socket: " + socket.id);
@@ -91,9 +91,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('joinRoom', function (roomName) {
         socket.get('username', function (error, username) {
             socket.join(roomName);
-
-            socket.emit('updateRoomsList', getUserRoomList(socket));
-
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log(logStr() + "Added user: " + username + " to room: " + roomName);
             console.log(logStr() + "User: " + username + " is in rooms: ");
@@ -104,9 +101,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('leaveRoom', function (roomName) {
         socket.get('username', function (error, username) {
             socket.leave(roomName);
-
-            socket.emit('updateRoomsList', getUserRoomList(socket));
-
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
             console.log(logStr() + "User: " + username + " is in rooms: ");

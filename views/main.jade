@@ -9,7 +9,9 @@ block content
 				a#add-room(href="#")
 					span.glyphicon.glyphicon-plus
 			li.span
-				a(href="#room-Lobby", data-toggle="tab") Lobby
+				a(href="#room-Lobby", data-toggle="tab")
+					span#Lobby-badge.badge.badge-user
+					| Lobby
 
 	div#chat-panel.col-xs-9.well.tab-content
 		div#more-msgs There are more messages!
