@@ -237,3 +237,8 @@ app.get('/', function(req, res){
     console.log(logStr() + "GET Request made to " + '/');
     res.render('login.jade');
 });
+
+app.get('/aboutus', function(req, res){
+    console.log("GET Request made to " + '/aboutus');
+    res.render('aboutus.jade');
+});

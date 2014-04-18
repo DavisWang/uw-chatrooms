@@ -1,0 +1,10 @@
+body {
+	text-align: center;
+	font-size: 18px !important;
+	overflow: auto !important;
+}
+
+img {
+	width: 150px;
+	height: 150px;
+}
