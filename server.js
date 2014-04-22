@@ -22,8 +22,8 @@ app.configure(function() {
 
 //usersList: id -> username
 //usersListr: username -> id
-var usersList = new Array();
-var usersListr = new Array();
+var usersList = {};
+var usersListr = {};
 
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
@@ -38,6 +38,7 @@ io.sockets.on('connection', function (socket) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
         numConnected++;
+        console.log(logStr() + "usersList is: " + JSON.stringify(usersList));
         console.log(logStr() + numConnected + ' connected');
 
         socket.emit('saveUsername', {'clientUsername': username});
@@ -93,8 +94,7 @@ io.sockets.on('connection', function (socket) {
             socket.join(roomName);
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log(logStr() + "Added user: " + username + " to room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: ");
-            console.log(logStr() + io.roomClients[socket.id]);
+            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
         });
     });
 
@@ -103,8 +103,7 @@ io.sockets.on('connection', function (socket) {
             socket.leave(roomName);
             io.sockets.in(roomName).emit('loadUsersList', {'roomName' : roomName, 'usernamesList' : getUsernamesList(roomName)});
             console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: ");
-            console.log(logStr() + io.sockets.manager.roomClients[socket.id]);
+            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
         });
     });
 
@@ -134,12 +133,10 @@ io.sockets.on('connection', function (socket) {
 
                 console.log(logStr() + 'User ' + username + ' has disconnected');
 
-                console.log(logStr() + "usersList was ");
-                console.log(logStr() + usersList);
+                console.log(logStr() + "usersList was " + JSON.stringify(usersList));
                 delete usersListr[usersList[socket.id]]
                 delete usersList[socket.id];
-                console.log(logStr() + "usersList is now ");
-                console.log(logStr() + usersList);
+                console.log(logStr() + "usersList is now " + JSON.stringify(usersList));
                 numConnected--;
                 io.sockets.emit('numConnected', {'numConnected' : numConnected});
                 console.log(logStr() + "Number of users left on the service: " + numConnected);
