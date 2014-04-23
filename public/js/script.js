@@ -69,7 +69,7 @@ socket.on('disconnect', function (data) {
     socket.socket.reconnect();
 });
 
-socket.on('serverRestart', function (data) {
+socket.on('kickClient', function (data) {
     window.location.href = data.url;
 });
 
