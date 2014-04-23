@@ -150,8 +150,12 @@ span.glyphicon-remove:hover {
   color: #555;
 }
 
-span.badge-user{
+span.tab-badge{
   margin-right: 3px;
+}
+
+a.badge-notification{
+  background-color: #f5f5f5;
 }
 
 /* Room related CSS */
