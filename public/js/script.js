@@ -32,7 +32,7 @@ function addMessage(msg, roomName, username) {
       userRoomsList[index].numNewMsgs++;
       //show badge if it is hidden
       if($('#'+roomName+'-badge').is(":hidden")){
-        // $('#'+roomName+'-badge').parent().css("background-color", "#f5f5f5");
+        $('#'+roomName+'-badge').parent().addClass("badge-notification");
         $('#'+roomName+'-badge').show();
       }
       $('#'+roomName+'-badge').text(userRoomsList[index].numNewMsgs);
@@ -126,7 +126,7 @@ socket.on('createRoomResponse', function (data) {
         $('div#side-panel').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">' +
-          '<span id = "' + data.roomName + '-badge" class="badge badge-user"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
+          '<span id = "' + data.roomName + '-badge" class="badge tab-badge"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
 
         //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
@@ -139,7 +139,8 @@ socket.on('createRoomResponse', function (data) {
             //hide badge for the room after user clicks on the room
             var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
             userRoomsList[index].numNewMsgs = 0;
-            $('#'+currentRoom+'-badge').hide();						
+            $('#'+currentRoom+'-badge').hide();
+            $('#'+currentRoom+'-badge').parent().removeClass("badge-notification");
         });
 
         //close tab functionality
@@ -227,6 +228,7 @@ $(function() {
         var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
         userRoomsList[index].numNewMsgs = 0;
         $('#'+currentRoom+'-badge').hide();
+        $('#'+currentRoom+'-badge').parent().removeClass("badge-notification");
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
