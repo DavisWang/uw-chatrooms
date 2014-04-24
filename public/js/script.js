@@ -27,22 +27,38 @@ function escapeHtml(unsafe) {
 function addMessage(msg, roomName, username) {
 
     //check if user is in the room. If not, add 1 new unread message.
-    if(currentRoom!=roomName){
+    if (currentRoom!=roomName) {
       var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
       userRoomsList[index].numNewMsgs++;
       //show badge if it is hidden
-      if($('#'+roomName+'-badge').is(":hidden")){
-        $('#'+roomName+'-badge').parent().addClass("badge-notification-bg");
+      if ($('#'+roomName+'-badge').is(":hidden")) {
+        $('#'+roomName+'-badge').parent().addClass("tab-badge-notification-bg");
         $('#'+roomName+'-badge').show();
       }
       $('#'+roomName+'-badge').text(userRoomsList[index].numNewMsgs);
     }
+    
+    //create message timestamp
+    var time = new Date();
+    var hour = time.getHours();
+    var minute = time.getMinutes();
+    var second = time.getSeconds();
+    var sign = "am";
+    if (hour > 11) {
+      sign = "pm";
+      if (hour > 12) {
+        hour = hour % 12;
+      }
+    }
+    time = hour + ":" + minute + ":" + second + " " + sign;
 
     //append to the right div/ie to the right room
-    $('div#chat-panel div#room-' + roomName + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span></div>');
+    $('div#chat-panel div#room-' + roomName + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' 
+      + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">' 
+      + time + '</span>' + '</div>');
 
     var roomChatEntries = $('div#chat-panel div#room-' + roomName + ' div.chat-entries');
-    if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200) ) {
+    if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200)) {
         roomChatEntries.animate({
             scrollTop: roomChatEntries[0].scrollHeight
         }, 200);
@@ -126,7 +142,7 @@ socket.on('createRoomResponse', function (data) {
         $('div#side-panel').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">' +
-          '<span id = "' + data.roomName + '-badge" class="badge badge-tab"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
+          '<span id = "' + data.roomName + '-badge" class="badge tab-badge"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
 
         //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
@@ -140,7 +156,7 @@ socket.on('createRoomResponse', function (data) {
             var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
             userRoomsList[index].numNewMsgs = 0;
             $('#'+currentRoom+'-badge').hide();
-            $('#'+currentRoom+'-badge').parent().removeClass("badge-notification-bg");
+            $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
         });
 
         //close tab functionality
@@ -228,7 +244,7 @@ $(function() {
         var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
         userRoomsList[index].numNewMsgs = 0;
         $('#'+currentRoom+'-badge').hide();
-        $('#'+currentRoom+'-badge').parent().removeClass("badge-notification-bg");
+        $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
