@@ -17,7 +17,6 @@ app.configure(function() {
     app.use(express.static(__dirname + "/public"));
     app.use(express.urlencoded());
     app.use(app.router);
-
 });
 
 //usersList: id -> username
@@ -167,7 +166,7 @@ function logStr() {
 //alphanumeric + underscore + hyphen
 //TODO provide support for spaces?
 function isValidString (string) {
-    var valid = /^[a-zA-Z0-9-_]*$/.test(string) ? true : false;
+    var valid = /^[a-zA-Z0-9_ ]*$/.test(string) ? true : false;
     return valid;
 }
 
