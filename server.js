@@ -25,6 +25,9 @@ app.configure(function() {
 var usersList = {};
 var usersListr = {};
 
+//public rooms list
+var publicRoomsList = ["Lobby"];
+
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
 var numConnected = 0;
@@ -49,7 +52,7 @@ io.sockets.on("connection", function (socket) {
         io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby")});
         io.sockets.emit("numConnected", {"numConnected" : numConnected});
 
-        socket.emit("initRoomsList", getUserRoomList(socket));
+        socket.emit("initRoomsList", getUserRoomList(socket), publicRoomsList);
     }
     else {
         console.log(logStr() + "Kicking user: " + username + " due to server restart");
@@ -70,25 +73,32 @@ io.sockets.on("connection", function (socket) {
         });
     });
 
-    socket.on("createRoom", function (roomName) {
+    socket.on("createRoom", function (data) {
         socket.get("username", function (error, name) {
             var created = false;
             var errorCode = 0;
-            if(!isValidString(roomName)) {
+            if(!isValidString(data.roomName)) {
                 errorCode = 1;
             }
-            else if (typeof io.sockets.manager.rooms["/" + roomName] !== "undefined") {
+            else if (typeof io.sockets.manager.rooms["/" + data.roomName] !== "undefined") {
                 errorCode = 2;
             }
-            else if (roomName == "Lobby") {
+            else if (data.roomName == "Lobby") {
                 errorCode = 3;
             }
             else {
-                console.log(logStr() + "User " + name + " created room name: " + roomName);
+                console.log(logStr() + "User " + name + " created room name: " + data.roomName);
                 created = true;
             }
-            var data = {"created" : created, "roomName" : roomName, "errorCode" : errorCode};
-            socket.emit("createRoomResponse", data);
+            
+            //populate the public room list for everyone
+            if (data.isPublic) {
+              publicRoomsList.push(data.roomName);
+              var data = {"publicRoomsList": publicRoomsList};
+              io.sockets.emit("populatePublicRooms", data);
+            }
+
+            socket.emit("createRoomResponse", {"created" : created, "roomName" : data.roomName, "errorCode" : errorCode});
         });
     });
 
@@ -107,6 +117,17 @@ io.sockets.on("connection", function (socket) {
             io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
             console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
             console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+            
+            //Remove public room if no one is in a public room
+            if (io.sockets.clients(roomName).length == 0) {
+              var index = publicRoomsList.indexOf(roomName);
+              if (index != -1) {
+                publicRoomsList.splice(index, 1);
+                //update public rooms list
+                var data = {"publicRoomsList": publicRoomsList};
+                io.sockets.emit("populatePublicRooms", data);
+              }
+            }
         });
     });
 
@@ -126,6 +147,11 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("acceptInvitation", function (roomName) {
+        var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
+        socket.emit("createRoomResponse", data);
+    });
+    
+    socket.on("joinPublicRoom", function (roomName) {
         var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
         socket.emit("createRoomResponse", data);
     });
@@ -152,6 +178,17 @@ io.sockets.on("connection", function (socket) {
                     else {
                         socket.leave(room.substring(1));
                         io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1))});
+                    }
+                    
+                    //remove public room if no one is left in a public room
+                    if (io.sockets.clients(room).length == 0) {
+                      var index = publicRoomsList.indexOf(room.substring(1));
+                      if (index != -1) {
+                        publicRoomsList.splice(index, 1);
+                        //update public rooms list
+                        var data = {"publicRoomsList": publicRoomsList};
+                        io.sockets.emit("populatePublicRooms", data);
+                      }
                     }
                 }
             });

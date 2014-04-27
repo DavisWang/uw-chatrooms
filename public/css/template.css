@@ -51,6 +51,10 @@ div#num-connected {
   font-weight: bold;
 }
 
+div#public-rooms-title {
+  font-weight: bold;
+}
+
 div#chat-controls {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -62,6 +66,10 @@ span.glyphicon-user {
   margin-right: 5px;
 }
 
+span.public-room-icon {
+  margin-right: 5px;
+}
+
 div.username {
   white-space: nowrap;
   overflow: hidden;
@@ -70,6 +78,17 @@ div.username {
 }
 
 div.username:hover {
+  color: #000;
+}
+
+div.public-room-entry {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #777;
+}
+
+div.public-room-entry:hover {
   color: #000;
 }
 
@@ -109,10 +128,23 @@ div.my-username {
   color: #428bca;
 }
 
+div#username-container {
+  margin-bottom: 20px;
+}
+
 /* Create Room Modal related css */
 
 #create-room-modal input#create-room-modal-input {
   width: 80%;
+  margin-bottom: 10px;
+}
+
+.modal-body>label {
+  font-weight: normal;
+}
+
+.modal-body>label>input {
+  margin-right: 3px;
 }
 
 /*Tab related css */

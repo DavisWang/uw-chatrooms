@@ -50,6 +50,12 @@ function addMessage(msg, roomName, username) {
         hour = hour % 12;
       }
     }
+    if (minute < 10) {
+      minute = "0" + minute;
+    }
+    if (second < 10) {
+      second = "0" + second;
+    }
     time = hour + ":" + minute + ":" + second + " " + sign;
 
     //append to the right div/ie to the right room
@@ -97,8 +103,10 @@ socket.on('numConnected', function (data) {
     $('#num-connected').html('Users online: ' + data.numConnected);
 });
 
-socket.on('initRoomsList', function (roomsList) {
+socket.on('initRoomsList', function (roomsList, publicRoomsList) {
     userRoomsList = [{'roomName': roomsList[0], numNewMsgs: 0}];
+    $('#public-rooms-title').text("Public Rooms:");
+    populatePublicRoomsList({"publicRoomsList": publicRoomsList});
 });
 
 socket.on('saveUsername', function (data) {
@@ -139,7 +147,7 @@ socket.on('createRoomResponse', function (data) {
         //chat container DOM creation
         $('div#chat-panel').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chat-entries"></div></div>');
         //room userList DOM creation
-        $('div#side-panel').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
+        $('div#username-container').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">' +
           '<span id = "' + data.roomName + '-badge" class="badge tab-badge"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
@@ -157,6 +165,9 @@ socket.on('createRoomResponse', function (data) {
             userRoomsList[index].numNewMsgs = 0;
             $('#'+currentRoom+'-badge').hide();
             $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
+            
+            //hide the public rooms list for rooms other than "Lobby"
+            $('#public-rooms-container').hide();
         });
 
         //close tab functionality
@@ -219,6 +230,33 @@ socket.on('createRoomResponse', function (data) {
     }
 });
 
+function populatePublicRoomsList(data) {
+  $('#public-rooms-list').empty();
+  for (var i = 0 ; i < data.publicRoomsList.length ; i++) {
+    $('#public-rooms-list').append('<div class="public-room-entry" id=' + data.publicRoomsList[i] + 
+      '-public-room><span class="glyphicon glyphicon-home public-room-icon"></span>' + data.publicRoomsList[i] + '</div>');
+    var publicRoomElement = $('div.public-room-entry:contains(' + data.publicRoomsList[i] + ')');
+    publicRoomElement.on({
+        click: function(e) {
+          //join the public room if it hasn't been joined yet, otherwise open the public room's tab
+          var roomName = this.id;
+          var index = roomName.indexOf("-public-room");
+          var roomName = roomName.slice(0, index);
+          var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
+          if (index == -1) {
+            socket.emit("joinPublicRoom", roomName);
+          } else {
+            $('a[href="#room-' + roomName + '"]').click();
+          }
+        }
+    });
+  }
+}
+
+socket.on('populatePublicRooms', function (data) {
+  populatePublicRoomsList(data);
+});
+
 $(function() {
 
     jQuery.event.props.push('dataTransfer');
@@ -245,6 +283,9 @@ $(function() {
         userRoomsList[index].numNewMsgs = 0;
         $('#'+currentRoom+'-badge').hide();
         $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
+        
+        //show the public rooms list
+        $('#public-rooms-container').show();
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
@@ -258,13 +299,15 @@ $(function() {
 
     //Modal related functionality
     $('#add-room').click(function () {
-        $('#create-room-modal').modal('show')
+        $('#create-room-modal').modal('show');
     });
 
     $('#create-room-buttom').click(function () {
         var roomName = $('input#create-room-modal-input').val();
-        if(roomName) {
-            socket.emit('createRoom', roomName);
+        //set isPublic to true (1) if checkbox is checked, otherwise false (0)
+        var isPublic = $('input#public-room-checkbox').prop("checked") ? 1 : 0;
+        if (roomName) {
+            socket.emit('createRoom', {"roomName": roomName, "isPublic": isPublic});
             $('input#create-room-modal-input').val('');
         }
     });
