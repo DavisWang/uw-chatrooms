@@ -24,18 +24,27 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
  }
 
+/**
+ * Transforms a string into an HTML attribute
+ * ie. replaces all spaces with dashes
+ **/
+function toClassString(str) {
+    return str.replace(/\s/g, "-");
+}
+
 function addMessage(msg, roomName, username) {
+    var roomNameClass = toClassString(roomName);
 
     //check if user is in the room. If not, add 1 new unread message.
-    if (currentRoom!=roomName) {
+    if(currentRoom != roomName){
       var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
       userRoomsList[index].numNewMsgs++;
       //show badge if it is hidden
-      if ($('#'+roomName+'-badge').is(":hidden")) {
-        $('#'+roomName+'-badge').parent().addClass("tab-badge-notification-bg");
-        $('#'+roomName+'-badge').show();
+      if($('#' + roomNameClass + '-badge').is(":hidden")){
+        $('#' + roomNameClass + '-badge').parent().addClass("tab-badge-notification-bg");
+        $('#' + roomNameClass + '-badge').show();
       }
-      $('#'+roomName+'-badge').text(userRoomsList[index].numNewMsgs);
+      $('#' + roomNameClass + '-badge').text(userRoomsList[index].numNewMsgs);
     }
     
     //create message timestamp
@@ -59,7 +68,7 @@ function addMessage(msg, roomName, username) {
     time = hour + ":" + minute + ":" + second + " " + sign;
 
     //append to the right div/ie to the right room
-    $('div#chat-panel div#room-' + roomName + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' 
+    $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' 
       + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">' 
       + time + '</span>' + '</div>');
 
@@ -114,23 +123,25 @@ socket.on('saveUsername', function (data) {
 });
 
 socket.on('loadUsersList', function (data) {
-    $('#usersList-' + data.roomName).empty();
-    $('#usersList-' + data.roomName).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
+    var roomNameClass = toClassString(data.roomName);
+
+    $('#usersList-' + roomNameClass).empty();
+    $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
       for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.usernamesList[i] != myUsername) {
-          $('#usersList-' + data.roomName).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+            $('#usersList-' + roomNameClass).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
 
-          var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
-          usernameElement.on({
-              dragstart: function(e) {
-                  e.dataTransfer.setData("username", $(this).text());
-                  $(this).css('opacity', '0.4');
-              },
-              dragend: function(e) {
-                  $(this).css('opacity', '1');
-              },
-          });
-      }
+            var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
+            usernameElement.on({
+                dragstart: function(e) {
+                    e.dataTransfer.setData("username", $(this).text());
+                    $(this).css('opacity', '0.4');
+                },
+                dragend: function(e) {
+                    $(this).css('opacity', '1');
+                },
+            });
+        }
     }
 });
 
@@ -143,28 +154,29 @@ socket.on('createRoomResponse', function (data) {
     if(data.created) {
         //adds room to client's userRoomsList array
         userRoomsList.push({'roomName' : data.roomName, 'numNewMsgs': 0});
-        
+        var roomNameClass = toClassString(data.roomName);
+
         //chat container DOM creation
-        $('div#chat-panel').append('<div id="room-'+ data.roomName + '" class="tab-pane"><div class="chat-entries"></div></div>');
+        $('div#chat-panel').append('<div id="room-'+ roomNameClass + '" class="tab-pane"><div class="chat-entries"></div></div>');
         //room userList DOM creation
-        $('div#username-container').append('<div id="usersList-' + data.roomName + '" class="usersList"></div>')
+        $('div#username-container').append('<div id="usersList-' + roomNameClass + '" class="usersList"></div>')
         //tab dom creation
-        $('ul#tab').append('<li class="span roomTab"><a href="#room-' + data.roomName + '" data-toggle="tab">' +
-          '<span id = "' + data.roomName + '-badge" class="badge tab-badge"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
+        $('ul#tab').append('<li class="span roomTab"><a href="#room-' + roomNameClass + '" data-toggle="tab">' +
+          '<span id = "' + roomNameClass + '-badge" class="badge badge-tab"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
 
         //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
             $('div.usersList').hide(); //hide all other usersLists
-            $('div#usersList-' + data.roomName).show(); //show the specific room usersList
-            currentRoom = data.roomName;
-            
+            $('div#usersList-' + roomNameClass).show(); //show the specific room usersList
+            currentRoom = data.roomName
+
             //hide badge for the room after user clicks on the room
             var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
             userRoomsList[index].numNewMsgs = 0;
-            $('#'+currentRoom+'-badge').hide();
-            $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
+            $('#' + roomNameClass + '-badge').hide();
+            $('#' + roomNameClass + '-badge').parent().removeClass("tab-badge-notification-bg");
             
             //hide the public rooms list for rooms other than "Lobby"
             $('#public-rooms-container').hide();
@@ -173,8 +185,8 @@ socket.on('createRoomResponse', function (data) {
         //close tab functionality
         $('ul#tab li:contains(' + data.roomName + ') span.glyphicon-remove').click(function () {
             $(this).parent().parent().remove(); //removes the li tag
-            $('div#room-' + data.roomName).remove(); //remove the main chatpanel
-            $('div#userlist-' + data.roomName).remove(); //remove userlist
+            $('div#room-' + roomNameClass).remove(); //remove the main chatpanel
+            $('div#userlist-' + roomNameClass).remove(); //remove userlist
             socket.emit('leaveRoom', data.roomName);
 
             $('ul#tab a:contains("Lobby")').click(); //go back to the lobby
@@ -216,7 +228,7 @@ socket.on('createRoomResponse', function (data) {
     }
     else {
         if(data.errorCode == 1) {
-            window.alert("Illegal room name! Room name can only contain alphanumeric characters, hyphen, and underscores!");
+            window.alert("Illegal room name! Room name can only contain alphanumeric characters, spaces, and underscores!");
         }
         else if (data.errorCode == 2) {
             window.alert("A room with that name already exists! Please choose another name!");
@@ -262,7 +274,7 @@ $(function() {
     jQuery.event.props.push('dataTransfer');
 
     //the default active room is Lobby
-    currentRoom = "Lobby";
+    currentRoom = "Lobby"
 
     $('#message-input').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -276,13 +288,13 @@ $(function() {
         $(this).tab('show');
         $('div.usersList').hide(); //hide all other usersLists
         $('div#usersList-Lobby').show(); //show the main usersList
-        currentRoom = "Lobby";
-        
+        currentRoom = "Lobby"
+
         //hide badge for the room after user clicks on the room
         var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
         userRoomsList[index].numNewMsgs = 0;
-        $('#'+currentRoom+'-badge').hide();
-        $('#'+currentRoom+'-badge').parent().removeClass("tab-badge-notification-bg");
+        $('#' + currentRoom + '-badge').hide();
+        $('#' + currentRoom + '-badge').parent().removeClass("tab-badge-notification-bg");
         
         //show the public rooms list
         $('#public-rooms-container').show();
@@ -293,7 +305,7 @@ $(function() {
     $('ul#tab li span.glyphicon-remove').click(function () {
         $(this).parent().parent().remove(); //removes the li tag
         var roomName = $(this).parent().text();
-        $('div#room-' + roomName).remove();
+        $('div#room-' + toClassString(roomName)).remove();
         socket.emit('leaveRoom', roomName);
     });
 
@@ -320,5 +332,7 @@ $(function() {
     });
     //Modal box login ends here
 
-    $('#submit').click(function() {sentMessage();});
+    $('#submit').click(function() {
+        sentMessage();
+    });
 });
