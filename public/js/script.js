@@ -36,7 +36,7 @@ function addMessage(msg, roomName, username) {
     var roomNameClass = toClassString(roomName);
 
     //check if user is in the room. If not, add 1 new unread message.
-    if(currentRoom != roomName){
+    if (currentRoom != roomName) {
       var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
       userRoomsList[index].numNewMsgs++;
       //show badge if it is hidden
@@ -72,7 +72,7 @@ function addMessage(msg, roomName, username) {
       + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">' 
       + time + '</span>' + '</div>');
 
-    var roomChatEntries = $('div#chat-panel div#room-' + roomName + ' div.chat-entries');
+    var roomChatEntries = $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries');
     if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200)) {
         roomChatEntries.animate({
             scrollTop: roomChatEntries[0].scrollHeight
@@ -86,7 +86,7 @@ function addMessage(msg, roomName, username) {
 function sentMessage() {
     if ($('#message-input').val() != "") {
         var messageBody = $('#message-input').val();
-        var data = {messageBody : messageBody, messageRoom : currentRoom};
+        var data = {"messageBody" : messageBody, "messageRoom" : currentRoom};
         socket.emit('sendMessage', data);
 
         //this current implementation is that when you send a message, for you, the message doesn't go to the server, only for others
@@ -170,7 +170,7 @@ socket.on('createRoomResponse', function (data) {
             $(this).tab('show');
             $('div.usersList').hide(); //hide all other usersLists
             $('div#usersList-' + roomNameClass).show(); //show the specific room usersList
-            currentRoom = data.roomName
+            currentRoom = data.roomName;
 
             //hide badge for the room after user clicks on the room
             var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
@@ -245,7 +245,7 @@ socket.on('createRoomResponse', function (data) {
 function populatePublicRoomsList(data) {
   $('#public-rooms-list').empty();
   for (var i = 0 ; i < data.publicRoomsList.length ; i++) {
-    $('#public-rooms-list').append('<div class="public-room-entry" id=' + data.publicRoomsList[i] + 
+    $('#public-rooms-list').append('<div class="public-room-entry" id=' + toClassString(data.publicRoomsList[i]) + 
       '-public-room><span class="glyphicon glyphicon-home public-room-icon"></span>' + data.publicRoomsList[i] + '</div>');
     var publicRoomElement = $('div.public-room-entry:contains(' + data.publicRoomsList[i] + ')');
     publicRoomElement.on({
@@ -254,11 +254,12 @@ function populatePublicRoomsList(data) {
           var roomName = this.id;
           var index = roomName.indexOf("-public-room");
           var roomName = roomName.slice(0, index);
+          roomName = roomName.replace("-", " ");
           var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
           if (index == -1) {
             socket.emit("joinPublicRoom", roomName);
           } else {
-            $('a[href="#room-' + roomName + '"]').click();
+            $('a[href="#room-' + toClassString(roomName) + '"]').click();
           }
         }
     });
@@ -319,8 +320,10 @@ $(function() {
         //set isPublic to true (1) if checkbox is checked, otherwise false (0)
         var isPublic = $('input#public-room-checkbox').prop("checked") ? 1 : 0;
         if (roomName) {
-            socket.emit('createRoom', {"roomName": roomName, "isPublic": isPublic});
+            socket.emit('createRoom', {"roomName" : roomName, "isPublic" : isPublic});
             $('input#create-room-modal-input').val('');
+            //reset the checkbox
+            $('input#public-room-checkbox').prop("checked", false);
         }
     });
 

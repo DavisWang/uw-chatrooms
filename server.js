@@ -91,10 +91,9 @@ io.sockets.on("connection", function (socket) {
             }
             
             //populate the public room list for everyone
-            if (data.isPublic) {
+            if (created && data.isPublic) {
               publicRoomsList.push(data.roomName);
-              var data = {"publicRoomsList": publicRoomsList};
-              io.sockets.emit("populatePublicRooms", data);
+              io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
             }
 
             socket.emit("createRoomResponse", {"created" : created, "roomName" : data.roomName, "errorCode" : errorCode});
