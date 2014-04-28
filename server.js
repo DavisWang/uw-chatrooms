@@ -76,27 +76,27 @@ io.sockets.on("connection", function (socket) {
         socket.get("username", function (error, name) {
             var created = false;
             var errorCode = 0;
-            if(!isValidString(data.roomName)) {
+            var roomName = data.roomName.trim();
+            if(!isValidString(roomName)) {
                 errorCode = 1;
             }
-            else if (typeof io.sockets.manager.rooms["/" + data.roomName] !== "undefined") {
+            else if (typeof io.sockets.manager.rooms["/" + roomName] !== "undefined") {
                 errorCode = 2;
             }
-            else if (data.roomName == "Lobby") {
+            else if (roomName == "Lobby") {
                 errorCode = 3;
             }
             else {
-                console.log(logStr() + "User " + name + " created room name: " + data.roomName);
+                console.log(logStr() + "User " + name + " created room name: '" + roomName + "'");
                 created = true;
             }
-            
+
             //populate the public room list for everyone
             if (created && data.isPublic) {
-              publicRoomsList.push(data.roomName);
-              io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
+              publicRoomsList.push(roomName);
+              io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
             }
-
-            socket.emit("createRoomResponse", {"created" : created, "roomName" : data.roomName, "errorCode" : errorCode});
+            socket.emit("createRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
         });
     });
 
@@ -242,9 +242,9 @@ function getUserRoomList(socket) {
 var username;
 app.post("/main", function(req, res){
     console.log(logStr() + "POST Request made to " + "/main");
-    username = req.body.username;
+    username = req.body.username.trim();
     if(isValidString(username) && !usersListr[username]) {
-        console.log(logStr() + "User logged in as " + username);
+        console.log(logStr() + "User logged in as '" + username + "'");
         res.render("main.jade");
     }
     else {
