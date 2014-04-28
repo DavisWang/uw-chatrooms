@@ -254,7 +254,7 @@ function populatePublicRoomsList(data) {
           var roomName = this.id;
           var index = roomName.indexOf("-public-room");
           var roomName = roomName.slice(0, index);
-          roomName = roomName.replace("-", " ");
+          roomName = roomName.replace(/-/g, " ");
           var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
           if (index == -1) {
             socket.emit("joinPublicRoom", roomName);
