@@ -162,7 +162,7 @@ socket.on('createRoomResponse', function (data) {
         $('div#username-container').append('<div id="usersList-' + roomNameClass + '" class="usersList"></div>')
         //tab dom creation
         $('ul#tab').append('<li class="span roomTab"><a href="#room-' + roomNameClass + '" data-toggle="tab">' +
-          '<span id = "' + roomNameClass + '-badge" class="badge badge-tab"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
+          '<span id = "' + roomNameClass + '-badge" class="badge tab-badge"></span>' + data.roomName + '<span class="glyphicon glyphicon-remove"></span></a></li>');
 
         //open tab functionality
         $('ul#tab li:contains(' + data.roomName + ') a').click(function (e) {
