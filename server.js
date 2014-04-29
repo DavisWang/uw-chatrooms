@@ -134,7 +134,7 @@ io.sockets.on("connection", function (socket) {
     socket.on("inviteUser", function (data) {
         socket.get("username", function (error, username) {
             //cannot invite someone already in room
-            if (!io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+            if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
                 io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
             }
             else {

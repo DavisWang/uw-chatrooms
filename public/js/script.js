@@ -143,7 +143,7 @@ socket.on('loadUsersList', function (data) {
                 },
                 dragend: function(e) {
                     $(this).css('opacity', '1');
-                },
+                }
             });
         }
     }
