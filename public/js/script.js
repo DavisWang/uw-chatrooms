@@ -32,6 +32,10 @@ function toClassString(str) {
     return str.replace(/\s/g, "-");
 }
 
+function toClassStringr(str) {
+    return str.replace(/-/g, " ");
+}
+
 function addMessage(msg, roomName, username) {
     var roomNameClass = toClassString(roomName);
 
@@ -254,7 +258,7 @@ function populatePublicRoomsList(data) {
           var roomName = this.id;
           var index = roomName.indexOf("-public-room");
           var roomName = roomName.slice(0, index);
-          roomName = roomName.replace(/-/g, " ");
+          roomName = toClassStringr(roomName);
           var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
           if (index == -1) {
             socket.emit("joinPublicRoom", roomName);
