@@ -6,6 +6,9 @@ var express = require("express"), app = express()
 , server = http.createServer(app).listen(port, ip)
 , io = require("socket.io").listen(server);
 
+io.enable('browser client minification'); // send minified client
+io.enable('browser client etag'); // apply etag caching logic based on version number
+io.enable('browser client gzip'); // gzip the file
 io.set("log level", 2);
 
 var jade = require("jade");
