@@ -150,8 +150,9 @@ socket.on('loadUsersList', function (data) {
 });
 
 socket.on('roomInvite', function (data) {
-    window.alert("User " + data.inviter + " invites you to " + data.roomName);
-    socket.emit('acceptInvitation', data.roomName);
+    $('#invitation-modal>div>div>div.modal-body').text("User " + data.inviter + " has invited you to " + data.roomName);
+    $('#invitation-modal>div>div>div#target-room').text(data.roomName);
+    $('#invitation-modal').modal('show');
 });
 
 socket.on('createRoomResponse', function (data) {
@@ -221,8 +222,6 @@ socket.on('createRoomResponse', function (data) {
                 socket.emit('inviteUser', {'username' : e.dataTransfer.getData('username'), 'roomName' : data.roomName});
             }
         });
-
-        $('#room-modal-close-button').click(); //close the window
 
         //subscribe to room
         socket.emit('joinRoom', data.roomName);
@@ -319,7 +318,7 @@ $(function() {
         $('#create-room-modal').modal('show');
     });
 
-    $('#create-room-buttom').click(function () {
+    $('#create-room-button').click(function () {
         var roomName = $('input#create-room-modal-input').val();
         //set isPublic to true (1) if checkbox is checked, otherwise false (0)
         var isPublic = $('input#public-room-checkbox').prop("checked") ? 1 : 0;
@@ -328,15 +327,24 @@ $(function() {
             $('input#create-room-modal-input').val('');
             //reset the checkbox
             $('input#public-room-checkbox').prop("checked", false);
+            //close the window
+            $('#room-modal-close-button').click();
         }
     });
 
     $("#create-room-modal-input").keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
-            $("#create-room-buttom").click();
+            $("#create-room-button").click();
         }
     });
+    
+    $('#invitation-modal-accept-button').click(function () {
+        var roomName = $('#invitation-modal>div>div>div#target-room').text();
+        socket.emit('acceptInvitation', roomName);
+        $('#invitation-modal-decline-button').click(); //close the window
+    });
+    
     //Modal box login ends here
 
     $('#submit').click(function() {
