@@ -76,20 +76,8 @@ io.sockets.on("connection", function (socket) {
             });
         }
         else {
-            console.log(logStr() + "User: " + usersList[socket.id] + " tried to sppof sendMessage! Data: " + JSON.stringify(clientData));
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof sendMessage! Data: " + JSON.stringify(clientData));
         }
-    });
-
-    socket.on("joinRoom", function (roomName) {
-        socket.get("username", function (error, username) {
-            var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
-            socket.emit("joinRoomResponse", data);
-
-            socket.join(roomName);
-            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
-        });
     });
 
     socket.on("createRoom", function (data) {
@@ -120,6 +108,17 @@ io.sockets.on("connection", function (socket) {
             //joins the room, this is the same logic as in socket.on('joinRoom')
 
             socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
+            socket.join(roomName);
+            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
+            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+        });
+    });
+
+    socket.on("joinRoom", function (roomName) {
+        socket.get("username", function (error, username) {
+            var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
+            socket.emit("joinRoomResponse", data);
 
             socket.join(roomName);
             io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
@@ -151,16 +150,21 @@ io.sockets.on("connection", function (socket) {
     //data.username: who to invite
     //data.roomName: the room to invite to
     socket.on("inviteUser", function (data) {
-        socket.get("username", function (error, username) {
-            //cannot invite someone already in room
-            if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
-                io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
-            }
-            else {
-                console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
-                //TODO emit a message to the socket of an error
-            }
-        });
+        if(io.roomClients[socket.id]["/" + clientData.messageRoom]) {
+            socket.get("username", function (error, username) {
+                //cannot invite someone already in room
+                if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+                    io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
+                }
+                else {
+                    console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
+                    //TODO emit a message to the socket of an error
+                }
+            });
+        }
+        else {
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof inviteUser! Data: " + JSON.stringify(data));
+        }
     });
 
     socket.on("disconnect", function() {
