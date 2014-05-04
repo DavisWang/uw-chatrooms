@@ -155,7 +155,7 @@ socket.on('roomInvite', function (data) {
     $('#invitation-modal').modal('show');
 });
 
-socket.on('createRoomResponse', function (data) {
+socket.on('joinRoomResponse', function (data) {
     if(data.created) {
         //adds room to client's userRoomsList array
         userRoomsList.push({'roomName' : data.roomName, 'numNewMsgs': 0});
@@ -222,12 +222,7 @@ socket.on('createRoomResponse', function (data) {
                 socket.emit('inviteUser', {'username' : e.dataTransfer.getData('username'), 'roomName' : data.roomName});
             }
         });
-
-        //subscribe to room
-        socket.emit('joinRoom', data.roomName);
-
         $('ul#tab li:contains(' + data.roomName + ') a').click();
-
     }
     else {
         if(data.errorCode == 1) {
@@ -260,7 +255,7 @@ function populatePublicRoomsList(data) {
           roomName = toClassStringr(roomName);
           var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
           if (index == -1) {
-            socket.emit("joinPublicRoom", roomName);
+            socket.emit("joinRoom", roomName);
           } else {
             $('a[href="#room-' + toClassString(roomName) + '"]').click();
           }
@@ -341,7 +336,7 @@ $(function() {
     
     $('#invitation-modal-accept-button').click(function () {
         var roomName = $('#invitation-modal-accept-button').data("roomName");
-        socket.emit('acceptInvitation', roomName);
+        socket.emit('joinRoom', roomName);
         $('#invitation-modal-decline-button').click(); //close the window
     });
     

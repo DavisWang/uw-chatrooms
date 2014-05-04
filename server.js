@@ -9,7 +9,7 @@ var express = require("express"), app = express()
 io.enable('browser client minification'); // send minified client
 io.enable('browser client etag'); // apply etag caching logic based on version number
 io.enable('browser client gzip'); // gzip the file
-io.set("log level", 2);
+// io.set("log level", 2);
 
 var jade = require("jade");
 
@@ -64,15 +64,15 @@ io.sockets.on("connection", function (socket) {
     socket.on("sendMessage", function (clientData) {
         //TODO: validate msg contents
         if(clientData.messageRoom == "Lobby" || io.roomClients[socket.id]["/" + clientData.messageRoom]) {
-            socket.get("username", function (error, name) {
-                var data = {"message" : clientData.messageBody, "username" : name, "roomName" : clientData.messageRoom};
+            socket.get("username", function (error, username) {
+                var data = {"message" : clientData.messageBody, "username" : username, "roomName" : clientData.messageRoom};
                 if (clientData.messageRoom == "Lobby") {
                     socket.broadcast.to("").emit("sendMessageResponse", data);
                 }
                 else {
                     socket.broadcast.to(clientData.messageRoom).emit("sendMessageResponse", data);
                 }
-                console.log(logStr() + "User " + name + " send this : " + clientData.messageBody + " to room: " + clientData.messageRoom);
+                console.log(logStr() + "User " + username + " send this : " + clientData.messageBody + " to room: " + clientData.messageRoom);
             });
         }
         else {
@@ -80,8 +80,20 @@ io.sockets.on("connection", function (socket) {
         }
     });
 
+    socket.on("joinRoom", function (roomName) {
+        socket.get("username", function (error, username) {
+            var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
+            socket.emit("joinRoomResponse", data);
+
+            socket.join(roomName);
+            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
+            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+        });
+    });
+
     socket.on("createRoom", function (data) {
-        socket.get("username", function (error, name) {
+        socket.get("username", function (error, username) {
             var created = false;
             var errorCode = 0;
             var roomName = data.roomName.trim();
@@ -95,7 +107,7 @@ io.sockets.on("connection", function (socket) {
                 errorCode = 3;
             }
             else {
-                console.log(logStr() + "User " + name + " created room name: '" + roomName + "'");
+                console.log(logStr() + "User " + username + " created room name: '" + roomName + "'");
                 created = true;
             }
 
@@ -104,12 +116,11 @@ io.sockets.on("connection", function (socket) {
               publicRoomsList.push(roomName);
               io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
             }
-            socket.emit("createRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
-        });
-    });
 
-    socket.on("joinRoom", function (roomName) {
-        socket.get("username", function (error, username) {
+            //joins the room, this is the same logic as in socket.on('joinRoom')
+
+            socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
+
             socket.join(roomName);
             io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
             console.log(logStr() + "Added user: " + username + " to room: " + roomName);
@@ -150,16 +161,6 @@ io.sockets.on("connection", function (socket) {
                 //TODO emit a message to the socket of an error
             }
         });
-    });
-
-    socket.on("acceptInvitation", function (roomName) {
-        var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
-        socket.emit("createRoomResponse", data);
-    });
-    
-    socket.on("joinPublicRoom", function (roomName) {
-        var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
-        socket.emit("createRoomResponse", data);
     });
 
     socket.on("disconnect", function() {
