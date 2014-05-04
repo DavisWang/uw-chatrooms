@@ -62,17 +62,22 @@ io.sockets.on("connection", function (socket) {
     }
 
     socket.on("sendMessage", function (clientData) {
-        socket.get("username", function (error, name) {
-            var data = { "message" : clientData.messageBody, "username" : name, "roomName" : clientData.messageRoom};
-            if (clientData.messageRoom == "Lobby") {
-                socket.broadcast.to("").emit("sendMessageResponse", data);
-            }
-            else {
-                socket.broadcast.to(clientData.messageRoom).emit("sendMessageResponse", data);
-            }
-
-            console.log(logStr() + "User " + name + " send this : " + clientData.messageBody + " to room: " + clientData.messageRoom);
-        });
+        //TODO: validate msg contents
+        if(clientData.messageRoom == "Lobby" || io.roomClients[socket.id]["/" + clientData.messageRoom]) {
+            socket.get("username", function (error, name) {
+                var data = {"message" : clientData.messageBody, "username" : name, "roomName" : clientData.messageRoom};
+                if (clientData.messageRoom == "Lobby") {
+                    socket.broadcast.to("").emit("sendMessageResponse", data);
+                }
+                else {
+                    socket.broadcast.to(clientData.messageRoom).emit("sendMessageResponse", data);
+                }
+                console.log(logStr() + "User " + name + " send this : " + clientData.messageBody + " to room: " + clientData.messageRoom);
+            });
+        }
+        else {
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to sppof sendMessage! Data: " + JSON.stringify(clientData));
+        }
     });
 
     socket.on("createRoom", function (data) {
