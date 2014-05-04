@@ -151,7 +151,7 @@ socket.on('loadUsersList', function (data) {
 
 socket.on('roomInvite', function (data) {
     $('#invitation-modal>div>div>div.modal-body').text("User " + data.inviter + " has invited you to " + data.roomName);
-    $('#invitation-modal>div>div>div#target-room').text(data.roomName);
+    $('#invitation-modal-accept-button').data("roomName", data.roomName);
     $('#invitation-modal').modal('show');
 });
 
@@ -340,7 +340,7 @@ $(function() {
     });
     
     $('#invitation-modal-accept-button').click(function () {
-        var roomName = $('#invitation-modal>div>div>div#target-room').text();
+        var roomName = $('#invitation-modal-accept-button').data("roomName");
         socket.emit('acceptInvitation', roomName);
         $('#invitation-modal-decline-button').click(); //close the window
     });
