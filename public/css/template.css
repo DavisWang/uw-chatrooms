@@ -79,6 +79,7 @@ div.username {
 
 div.username:hover {
   color: #000;
+  cursor: move;
 }
 
 div.public-room-entry {
@@ -90,6 +91,7 @@ div.public-room-entry {
 
 div.public-room-entry:hover {
   color: #000;
+  cursor: pointer;
 }
 
 div.well {
