@@ -135,23 +135,28 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("leaveRoom", function (roomName) {
-        socket.get("username", function (error, username) {
-            socket.leave(roomName);
-            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-            console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
-            
-            //Remove public room if no one is in a public room
-            if (io.sockets.clients(roomName).length == 0) {
-              var index = publicRoomsList.indexOf(roomName);
-              if (index != -1) {
-                publicRoomsList.splice(index, 1);
-                //update public rooms list
-                var data = {"publicRoomsList": publicRoomsList};
-                io.sockets.emit("populatePublicRooms", data);
-              }
-            }
-        });
+        if (io.roomClients[socket.id]["/" + data.roomName]) {
+            socket.get("username", function (error, username) {
+                socket.leave(roomName);
+                io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+                console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
+                console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+
+                //Remove public room if no one is in a public room
+                if (io.sockets.clients(roomName).length == 0) {
+                  var index = publicRoomsList.indexOf(roomName);
+                  if (index != -1) {
+                    publicRoomsList.splice(index, 1);
+                    //update public rooms list
+                    var data = {"publicRoomsList": publicRoomsList};
+                    io.sockets.emit("populatePublicRooms", data);
+                  }
+                }
+            });
+        }
+        else {
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof leaveRoom! Data: " + JSON.stringify(roomName));
+        }
     });
 
     //data.username: who to invite
