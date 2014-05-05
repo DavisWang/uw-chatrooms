@@ -336,8 +336,13 @@ $(function() {
     
     $('#invitation-modal-accept-button').click(function () {
         var roomName = $('#invitation-modal-accept-button').data("roomName");
-        socket.emit('joinRoom', roomName);
-        $('#invitation-modal-decline-button').click(); //close the window
+        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : true});
+        $('#invitation-modal').modal('hide'); //close the window
+    });
+    
+    $('#invitation-modal-decline-button').click(function () {
+        var roomName = $('#invitation-modal-accept-button').data("roomName");
+        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : false});
     });
     
     //Modal box login ends here

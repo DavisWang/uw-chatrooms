@@ -115,16 +115,23 @@ io.sockets.on("connection", function (socket) {
         });
     });
 
-    socket.on("joinRoom", function (roomName) {
-        socket.get("username", function (error, username) {
-            var data = {"created" : true, "roomName" : roomName, "errorCode" : 0};
-            socket.emit("joinRoomResponse", data);
+    socket.on("joinRoom", function (data) {
+        if (socket.roomInvited == data.roomName) {
+            if (data.hasAccepted) {
+                socket.get("username", function (error, username) {
+                    socket.emit("joinRoomResponse", {"created" : true, "roomName" : data.roomName, "errorCode" : 0});
 
-            socket.join(roomName);
-            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
-        });
+                    socket.join(data.roomName);
+                    io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName)});
+                    console.log(logStr() + "Added user: " + username + " to room: " + data.roomName);
+                    console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+                });
+            }
+            //invalidate the invitation
+            socket.roomInvited = null;
+        } else {
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof joinRoom! Tried to join room: " + JSON.stringify(data.roomName));
+        }
     });
 
     socket.on("leaveRoom", function (roomName) {
@@ -150,10 +157,12 @@ io.sockets.on("connection", function (socket) {
     //data.username: who to invite
     //data.roomName: the room to invite to
     socket.on("inviteUser", function (data) {
-        if(io.roomClients[socket.id]["/" + clientData.messageRoom]) {
+        if (io.roomClients[socket.id]["/" + data.roomName]) {
             socket.get("username", function (error, username) {
                 //cannot invite someone already in room
                 if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+                    //set room invited variable so we can validate it later
+                    io.sockets.socket(usersListr[data.username]).roomInvited = data.roomName;
                     io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
                 }
                 else {
