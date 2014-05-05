@@ -135,7 +135,7 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("leaveRoom", function (roomName) {
-        if (io.roomClients[socket.id]["/" + data.roomName]) {
+        if (io.roomClients[socket.id]["/" + roomName]) {
             socket.get("username", function (error, username) {
                 socket.leave(roomName);
                 io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
