@@ -116,7 +116,8 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("joinRoom", function (data) {
-        if (socket.roomInvited == data.roomName) {
+        var index = publicRoomsList.indexOf(data.roomName);
+        if (index != -1 || socket.roomInvited == data.roomName) { //if a public room, accept it. if a private room, check for invitation.
             if (data.hasAccepted) {
                 socket.get("username", function (error, username) {
                     socket.emit("joinRoomResponse", {"created" : true, "roomName" : data.roomName, "errorCode" : 0});

@@ -255,7 +255,7 @@ function populatePublicRoomsList(data) {
           roomName = toClassStringr(roomName);
           var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
           if (index == -1) {
-            socket.emit("joinRoom", roomName);
+            socket.emit("joinRoom", {"roomName" : roomName, "hasAccepted" : true});
           } else {
             $('a[href="#room-' + toClassString(roomName) + '"]').click();
           }
