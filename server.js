@@ -52,7 +52,7 @@ io.sockets.on("connection", function (socket) {
 
         socket.emit("saveUsername", {"clientUsername": username});
         io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby")});
-        io.sockets.emit("numConnected", {"numConnected" : numConnected});
+        io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
 
         socket.emit("initRoomsList", getUserRoomList(socket), publicRoomsList);
     }
@@ -110,6 +110,7 @@ io.sockets.on("connection", function (socket) {
             socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
             socket.join(roomName);
             io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+            io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
             console.log(logStr() + "Added user: " + username + " to room: " + roomName);
             console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
         });
@@ -124,6 +125,7 @@ io.sockets.on("connection", function (socket) {
 
                     socket.join(data.roomName);
                     io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName)});
+                    io.sockets.in(data.roomName).emit("numConnected", {"roomName" : data.roomName, "numConnected" : io.sockets.clients(data.roomName).length});	//number of clients in a room
                     console.log(logStr() + "Added user: " + username + " to room: " + data.roomName);
                     console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
                 });
@@ -140,6 +142,8 @@ io.sockets.on("connection", function (socket) {
             socket.get("username", function (error, username) {
                 socket.leave(roomName);
                 io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+                io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
+                
                 console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
                 console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
 
@@ -193,7 +197,7 @@ io.sockets.on("connection", function (socket) {
                 delete usersList[socket.id];
                 console.log(logStr() + "usersList is now " + JSON.stringify(usersList));
                 numConnected--;
-                io.sockets.emit("numConnected", {"numConnected" : numConnected});
+                io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
                 console.log(logStr() + "Number of users left on the service: " + numConnected);
 
                 for (room in io.sockets.manager.roomClients[socket.id]) {
@@ -204,6 +208,7 @@ io.sockets.on("connection", function (socket) {
                     else {
                         socket.leave(room.substring(1));
                         io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1))});
+                        io.sockets.in(room.substring(1)).emit("numConnected", {"roomName" : room.substring(1), "numConnected" : io.sockets.clients(room.substring(1)).length});	//number of clients in a room
                     }
                     
                     //remove public room if no one is left in a public room

@@ -113,7 +113,11 @@ socket.on('sendMessageResponse', function (data) {
 });
 
 socket.on('numConnected', function (data) {
-    $('#num-connected').html('Users online: ' + data.numConnected);
+    if (data.roomName == "Lobby") {
+      $('#num-connected-Lobby').html('Users online: ' + data.numConnected);
+    } else {
+      $('#num-connected-' + data.roomName).html('Users in room: ' + data.numConnected);
+    }
 });
 
 socket.on('initRoomsList', function (roomsList, publicRoomsList) {
@@ -163,6 +167,8 @@ socket.on('joinRoomResponse', function (data) {
 
         //chat container DOM creation
         $('div#chat-panel').append('<div id="room-'+ roomNameClass + '" class="tab-pane"><div class="chat-entries"></div></div>');
+        //room num-connected DOM creation
+        $('div#num-connected-container').append('<div id="num-connected-' + roomNameClass + '" class="num-connected"></div>');
         //room userList DOM creation
         $('div#username-container').append('<div id="usersList-' + roomNameClass + '" class="usersList"></div>')
         //tab dom creation
@@ -185,6 +191,11 @@ socket.on('joinRoomResponse', function (data) {
             
             //hide the public rooms list for rooms other than "Lobby"
             $('#public-rooms-container').hide();
+            
+            //hide number of users connected in all other rooms
+            $('div.num-connected').hide();
+            //show number of users connected in this specific room
+            $('div#num-connected-' + roomNameClass).show(); 
         });
 
         //close tab functionality
@@ -297,6 +308,11 @@ $(function() {
         
         //show the public rooms list
         $('#public-rooms-container').show();
+        
+        //hide number of users connected in all other rooms
+        $('div.num-connected').hide();
+        //show number of users connected in Lobby
+        $('div#num-connected-Lobby').show();
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');

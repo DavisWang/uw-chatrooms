@@ -47,7 +47,7 @@ div#side-panel {
   height: inherit;
 }
 
-div#num-connected {
+div.num-connected {
   font-weight: bold;
 }
 
