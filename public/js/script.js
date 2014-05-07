@@ -1,4 +1,9 @@
-var socket = io.connect();
+/**
+ * From http://stackoverflow.com/questions/13745519/send-custom-data-along-with-handshakedata-in-socket-io
+ * Provides a means to pass custom data to socket io
+ * This fixes the user A/B concurrent request bug
+ **/
+var socket = io.connect("", {query : "username=" + username});
 
 //keep a list of rooms that the client is in so we don't make a lot of server requests
 var userRoomsList;
