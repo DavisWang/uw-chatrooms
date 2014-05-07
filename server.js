@@ -134,7 +134,9 @@ io.sockets.on("connection", function (socket) {
             //invalidate the invitation
             socket.roomInvited = null;
         } else {
-            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof joinRoom! Tried to join room: " + JSON.stringify(data.roomName));
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof joinRoom! Tried to join room: " + JSON.stringify(data));
+            console.log("Index is: " + index);
+            console.log("socket.roomInvited is: " + socket.roomInvited);
         }
     });
 
@@ -175,6 +177,7 @@ io.sockets.on("connection", function (socket) {
                     //set room invited variable so we can validate it later
                     io.sockets.socket(usersListr[data.username]).roomInvited = data.roomName;
                     io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
+                    console.log(logStr() + "User: " + username + " invited user: " + data.username + " to room: " + data.roomName);
                 }
                 else {
                     console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);

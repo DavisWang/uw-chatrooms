@@ -77,9 +77,13 @@ div.username {
   color: #777;
 }
 
-div.username:hover {
+div#all-users-list-container {
+  display: none; /* Hide this element initially */
+}
+
+div#all-users-list div.username:hover {
   color: #000;
-  cursor: move;
+  cursor: pointer;
 }
 
 div.public-room-entry {

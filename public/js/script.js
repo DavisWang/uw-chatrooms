@@ -139,21 +139,21 @@ socket.on('loadUsersList', function (data) {
     var roomNameClass = toClassString(data.roomName);
 
     $('#usersList-' + roomNameClass).empty();
+
+    //we only want to update all-users-list when Lobby's usersList is updated, ie. someone joined or left uwcr
+    if(data.roomName == "Lobby") {
+        $('#all-users-list').empty();
+    }
     $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
       for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.usernamesList[i] != myUsername) {
-            $('#usersList-' + roomNameClass).append('<div class="username" draggable="true"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
-
-            var usernameElement = $('div.username:contains(' + data.usernamesList[i] + ')');
-            usernameElement.on({
-                dragstart: function(e) {
-                    e.dataTransfer.setData("username", $(this).text());
-                    $(this).css('opacity', '0.4');
-                },
-                dragend: function(e) {
-                    $(this).css('opacity', '1');
-                }
-            });
+            $('#usersList-' + roomNameClass).append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+            if(data.roomName == "Lobby") {
+                $('#all-users-list').append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+                $('#all-users-list div.username:contains(' + data.usernamesList[i] + ')').click(function (e) {
+                    socket.emit('inviteUser', {'username' : $(this).text(), 'roomName' : currentRoom});
+                });
+            }
         }
     }
 });
@@ -199,8 +199,12 @@ socket.on('joinRoomResponse', function (data) {
             
             //hide number of users connected in all other rooms
             $('div.num-connected').hide();
+
             //show number of users connected in this specific room
-            $('div#num-connected-' + roomNameClass).show(); 
+            $('div#num-connected-' + roomNameClass).show();
+
+            //show the all-users-list, since we are in a user created room now
+            $('div#all-users-list-container').show();
         });
 
         //close tab functionality
@@ -218,26 +222,6 @@ socket.on('joinRoomResponse', function (data) {
             userRoomsList.splice(index, 1);
         });
 
-        //attach dnd event listeners
-        $('#tab-container .roomTab:contains(' + data.roomName + ') a').on({
-            dragleave: function(e) {
-                $(this).removeClass('over');
-                e.preventDefault();
-            },
-            dragenter: function(e) {
-                $(this).addClass('over');
-                e.preventDefault();
-            },
-            dragover: function(e) {
-                $(this).addClass('over');
-                e.preventDefault();
-            },
-            drop: function(e) {
-                $(this).removeClass('over');
-                e.preventDefault();
-                socket.emit('inviteUser', {'username' : e.dataTransfer.getData('username'), 'roomName' : data.roomName});
-            }
-        });
         $('ul#tab li:contains(' + data.roomName + ') a').click();
     }
     else {
@@ -285,8 +269,6 @@ socket.on('populatePublicRooms', function (data) {
 });
 
 $(function() {
-    jQuery.event.props.push('dataTransfer');
-
     //the default active room is Lobby
     currentRoom = "Lobby"
 
@@ -317,6 +299,9 @@ $(function() {
         $('div.num-connected').hide();
         //show number of users connected in Lobby
         $('div#num-connected-Lobby').show();
+
+        //hide the all-users-list-container
+        $('div#all-users-list-container').hide();
     });
     //by default, show the Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
@@ -364,7 +349,6 @@ $(function() {
         var roomName = $('#invitation-modal-accept-button').data("roomName");
         socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : false});
     });
-    
     //Modal box login ends here
 
     $('#submit').click(function() {
