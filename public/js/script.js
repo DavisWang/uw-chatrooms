@@ -281,11 +281,10 @@ function populatePublicRoomsList(data) {
 }
 
 socket.on('populatePublicRooms', function (data) {
-  populatePublicRoomsList(data);
+    populatePublicRoomsList(data);
 });
 
 $(function() {
-
     jQuery.event.props.push('dataTransfer');
 
     //the default active room is Lobby

@@ -130,8 +130,27 @@ div.my-username {
   color: #428bca;
 }
 
+/*
+side-panel contains 3 containers, num-connected-container
+username-container, and public-rooms-container, there is an
+implicit max-height of 10% for num-connected-container since
+the other two containers use 90%
+*/
+
 div#username-container {
   margin-bottom: 20px;
+  max-height: 50%;
+  overflow-y: scroll;
+}
+
+div#public-rooms-container {
+  height: 40%;
+}
+
+div#public-rooms-list {
+  margin-bottom: 20px;
+  max-height: 90%;
+  overflow-y: scroll;
 }
 
 /* Create Room Modal related css */
