@@ -30,12 +30,15 @@ var usersListr = {};
 //public rooms list
 var publicRoomsList = ["Lobby"];
 
+var usernamesQueue = [];
+
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
 var numConnected = 0;
 
 io.sockets.on("connection", function (socket) {
 
+    username = usernamesQueue.shift();
     socket.set("username", username);
     console.log(logStr() + "User " + username + " connected");
 
@@ -276,6 +279,7 @@ var username;
 app.post("/main", function(req, res){
     console.log(logStr() + "POST Request made to " + "/main");
     username = req.body.username.trim();
+    usernamesQueue.push(username);
     if(isValidString(username) && !usersListr[username]) {
         console.log(logStr() + "User logged in as '" + username + "'");
         res.render("main.jade");
