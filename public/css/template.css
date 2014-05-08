@@ -77,6 +77,11 @@ div.username {
   color: #777;
 }
 
+label.username {
+  color: #777;
+  margin-bottom: 0px;
+}
+
 div#all-users-list-container {
   display: none; /* Hide this element initially */
 }
@@ -170,6 +175,15 @@ div#public-rooms-list {
 
 .modal-body>label>input {
   margin-right: 3px;
+}
+
+div#create-room-modal-invite-user-title {
+  font-weight: normal;
+}
+
+div#create-room-modal-invite-user-container {
+  overflow-y: auto;
+  max-height: 150px;
 }
 
 /*Tab related css */

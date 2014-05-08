@@ -144,6 +144,10 @@ socket.on('loadUsersList', function (data) {
     if(data.roomName == "Lobby") {
         $('#all-users-list').empty();
     }
+    
+    //empty the create new room modal's users list
+    $('#create-room-modal-invite-user-container').empty();
+    
     $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
       for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.usernamesList[i] != myUsername) {
@@ -154,6 +158,9 @@ socket.on('loadUsersList', function (data) {
                     socket.emit('inviteUser', {'username' : $(this).text(), 'roomName' : currentRoom});
                 });
             }
+            //Conveniently also populate the create new room modal's users list
+            $('#create-room-modal-invite-user-container').append('<label class="username"> <input type="checkbox" data-username="' 
+              + data.usernamesList[i] + '"> <span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</label><br/>');
         }
     }
 });
@@ -329,6 +336,15 @@ $(function() {
             $('input#public-room-checkbox').prop("checked", false);
             //close the window
             $('#room-modal-close-button').click();
+            
+            //send room invitations to other users if any
+            var usersToInvite = new Array();
+            $.each($("#create-room-modal-invite-user-container>label>input:checked"), function() {
+              usersToInvite.push($(this).data("username"));
+            });
+            for (var i = 0; i < usersToInvite.length; i++) {
+              socket.emit('inviteUser', {'username' : usersToInvite[i], 'roomName' : roomName});
+            }
         }
     });
 
@@ -341,7 +357,7 @@ $(function() {
     
     $('#invitation-modal-accept-button').click(function () {
         var roomName = $('#invitation-modal-accept-button').data("roomName");
-        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : true});
+        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : true});				
         $('#invitation-modal').modal('hide'); //close the window
     });
     
