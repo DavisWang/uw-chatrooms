@@ -14,6 +14,9 @@ var currentRoom;
 //the client's username
 var myUsername;
 
+//stores how many clients are connected to the service, makes showing the all-users-list easier
+var usersOnline;
+
 /**
  * From http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
  * Provides a means to escape user inputted messages
@@ -140,14 +143,21 @@ socket.on('loadUsersList', function (data) {
 
     $('#usersList-' + roomNameClass).empty();
 
+    //empty the create new room modal's users list    
+    $('#create-room-modal-invite-user-container').empty();
+
     //we only want to update all-users-list when Lobby's usersList is updated, ie. someone joined or left uwcr
     if(data.roomName == "Lobby") {
+        usersOnline = data.usernamesList.length;
         $('#all-users-list').empty();
+        if (data.usernamesList.length == 1 || currentRoom == "Lobby") {
+            $('#all-users-list-container').hide();
+        }
+        else if (currentRoom != "Lobby") {
+            $('#all-users-list-container').show();
+        }
     }
-    
-    //empty the create new room modal's users list
-    $('#create-room-modal-invite-user-container').empty();
-    
+
     $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
       for (var i = 0 ; i < data.usernamesList.length ; i++) {
         if (data.usernamesList[i] != myUsername) {
@@ -211,7 +221,9 @@ socket.on('joinRoomResponse', function (data) {
             $('div#num-connected-' + roomNameClass).show();
 
             //show the all-users-list, since we are in a user created room now
-            $('div#all-users-list-container').show();
+            if(usersOnline > 1) {
+                $('div#all-users-list-container').show();
+            }
         });
 
         //close tab functionality
@@ -357,7 +369,7 @@ $(function() {
     
     $('#invitation-modal-accept-button').click(function () {
         var roomName = $('#invitation-modal-accept-button').data("roomName");
-        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : true});				
+        socket.emit('joinRoom', {"roomName" : roomName, "hasAccepted" : true});
         $('#invitation-modal').modal('hide'); //close the window
     });
     

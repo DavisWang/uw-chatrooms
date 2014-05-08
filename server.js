@@ -118,25 +118,31 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("joinRoom", function (data) {
-        var index = publicRoomsList.indexOf(data.roomName);
-        if (index != -1 || socket.roomInvited == data.roomName) { //if a public room, accept it. if a private room, check for invitation.
-            if (data.hasAccepted) {
-                socket.get("username", function (error, username) {
-                    socket.emit("joinRoomResponse", {"created" : true, "roomName" : data.roomName, "errorCode" : 0});
+        //don't need to check for Lobby as you should never be able to join or leave Lobby
+        if (!io.roomClients[socket.id]["/" + data.roomName]) {
+            var index = publicRoomsList.indexOf(data.roomName);
+            if (index != -1 || socket.roomInvited == data.roomName) { //if a public room, accept it. if a private room, check for invitation.
+                if (data.hasAccepted) {
+                    socket.get("username", function (error, username) {
+                        socket.emit("joinRoomResponse", {"created" : true, "roomName" : data.roomName, "errorCode" : 0});
 
-                    socket.join(data.roomName);
-                    io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName)});
-                    io.sockets.in(data.roomName).emit("numConnected", {"roomName" : data.roomName, "numConnected" : io.sockets.clients(data.roomName).length});	//number of clients in a room
-                    console.log(logStr() + "Added user: " + username + " to room: " + data.roomName);
-                    console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
-                });
+                        socket.join(data.roomName);
+                        io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName)});
+                        io.sockets.in(data.roomName).emit("numConnected", {"roomName" : data.roomName, "numConnected" : io.sockets.clients(data.roomName).length}); //number of clients in a room
+                        console.log(logStr() + "Added user: " + username + " to room: " + data.roomName);
+                        console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+                    });
+                }
+                //invalidate the invitation
+                socket.roomInvited = null;
+            } else {
+                console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof joinRoom! Tried to join room: " + JSON.stringify(data));
+                console.log("Index is: " + index);
+                console.log("socket.roomInvited is: " + socket.roomInvited);
             }
-            //invalidate the invitation
-            socket.roomInvited = null;
-        } else {
-            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof joinRoom! Tried to join room: " + JSON.stringify(data));
-            console.log("Index is: " + index);
-            console.log("socket.roomInvited is: " + socket.roomInvited);
+        }
+        else {
+            console.log(logStr() + "User: " + usersList[socket.id] + " cannot join room: " + data.roomName + " because user is already in room.");
         }
     });
 

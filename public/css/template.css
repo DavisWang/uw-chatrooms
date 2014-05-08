@@ -47,11 +47,7 @@ div#side-panel {
   height: inherit;
 }
 
-div.num-connected {
-  font-weight: bold;
-}
-
-div#public-rooms-title {
+div.num-connected, div#public-rooms-title, div#all-users-list-title {
   font-weight: bold;
 }
 
@@ -62,11 +58,7 @@ div#chat-controls {
   bottom: 10px;
 }
 
-span.glyphicon-user {
-  margin-right: 5px;
-}
-
-span.public-room-icon {
+span.glyphicon-user, span.public-room-icon {
   margin-right: 5px;
 }
 
@@ -147,18 +139,18 @@ the other two containers use 90%
 */
 
 div#username-container {
-  margin-bottom: 20px;
-  max-height: 50%;
+  margin-bottom: 10px;
+  max-height: 45%;
   overflow-y: scroll;
 }
 
-div#public-rooms-container {
+div#public-rooms-container, div#all-users-list-container {
   height: 40%;
 }
 
-div#public-rooms-list {
-  margin-bottom: 20px;
-  max-height: 90%;
+div#public-rooms-list, div#all-users-list {
+  margin-bottom: 10px;
+  max-height: 95%;
   overflow-y: scroll;
 }
 
