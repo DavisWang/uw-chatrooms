@@ -44,7 +44,14 @@ function toClassStringr(str) {
     return str.replace(/-/g, " ");
 }
 
-function addMessage(msg, roomName, username) {
+/**
+ * Handles putting the message in the DOM
+ * msg = the actual message, pre sanitation
+ * roomName = the room which this msg was sent to
+ * username = the user who sent this msg
+ * other = a boolean to differentiate a message sent by self/others
+ **/
+function addMessage(msg, roomName, username, other) {
     var roomNameClass = toClassString(roomName);
 
     //check if user is in the room. If not, add 1 new unread message.
@@ -80,8 +87,9 @@ function addMessage(msg, roomName, username) {
     time = hour + ":" + minute + ":" + second + " " + sign;
 
     //append to the right div/ie to the right room
-    $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message bg-primary"><span class="msgUser">' 
-      + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">' 
+    var bgCSSClass = other ? "bg-primary" : "bg-info";
+    $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message ' + bgCSSClass + '"><span class="msgUser">'
+      + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">'
       + time + '</span>' + '</div>');
 
     var roomChatEntries = $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries');
@@ -102,7 +110,7 @@ function sentMessage() {
         socket.emit('sendMessage', data);
 
         //this current implementation is that when you send a message, for you, the message doesn't go to the server, only for others
-        addMessage(messageBody, currentRoom ,"Me");
+        addMessage(messageBody, currentRoom ,"Me", false);
         $('#message-input').val(''); //clear the input field
     }
 }
@@ -117,7 +125,7 @@ socket.on('kickClient', function (data) {
 });
 
 socket.on('sendMessageResponse', function (data) {
-    addMessage(data['message'], data['roomName'], data['username']);
+    addMessage(data['message'], data['roomName'], data['username'], true);
 });
 
 socket.on('numConnected', function (data) {

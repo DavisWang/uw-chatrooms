@@ -37,7 +37,7 @@ var numConnected = 0;
 
 io.sockets.on("connection", function (socket) {
     username = socket.handshake.query.username;
-    console.log(logStr() + "User " + username + " connected");
+    console.log(logStr() + "User " + username + " is connecting");
 
     if(!isValidString(username) || usersListr[username]) {
         console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
@@ -48,6 +48,7 @@ io.sockets.on("connection", function (socket) {
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
         numConnected++;
+        console.log(logStr() + "User " + username + " connected");
         console.log(logStr() + "usersList is: " + JSON.stringify(usersList));
         console.log(logStr() + numConnected + " connected");
 
@@ -119,6 +120,7 @@ io.sockets.on("connection", function (socket) {
 
     socket.on("joinRoom", function (data) {
         //don't need to check for Lobby as you should never be able to join or leave Lobby
+        //checks if the user is already in the room
         if (!io.roomClients[socket.id]["/" + data.roomName]) {
             var index = publicRoomsList.indexOf(data.roomName);
             if (index != -1 || socket.roomInvited == data.roomName) { //if a public room, accept it. if a private room, check for invitation.
