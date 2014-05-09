@@ -66,12 +66,12 @@ io.sockets.on("connection", function (socket) {
     socket.on("sendMessage", function (data) {
         if (data.messageRoom == "Lobby" || io.roomClients[socket.id]["/" + data.messageRoom]) {
             socket.get("username", function (error, username) {
-                var data = {"message" : data.messageBody, "username" : username, "roomName" : data.messageRoom};
+                var response = {"message" : data.messageBody, "username" : username, "roomName" : data.messageRoom};
                 if (data.messageRoom == "Lobby") {
-                    socket.broadcast.to("").emit("sendMessageResponse", data);
+                    socket.broadcast.to("").emit("sendMessageResponse", response);
                 }
                 else {
-                    socket.broadcast.to(data.messageRoom).emit("sendMessageResponse", data);
+                    socket.broadcast.to(data.messageRoom).emit("sendMessageResponse", response);
                 }
                 console.log(logStr() + "User " + username + " send this : " + data.messageBody + " to room: " + data.messageRoom);
             });
@@ -152,7 +152,7 @@ io.sockets.on("connection", function (socket) {
             socket.get("username", function (error, username) {
                 socket.leave(roomName);
                 io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-                io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
+                io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length}); //number of clients in a room
 
                 console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
                 console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
@@ -163,8 +163,7 @@ io.sockets.on("connection", function (socket) {
                   if (index != -1) {
                     publicRoomsList.splice(index, 1);
                     //update public rooms list
-                    var data = {"publicRoomsList": publicRoomsList};
-                    io.sockets.emit("populatePublicRooms", data);
+                    io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
                   }
                 }
             });
@@ -199,12 +198,12 @@ io.sockets.on("connection", function (socket) {
     socket.on("disconnect", function() {
         if (usersList.hasOwnProperty(socket.id)) {
             socket.get("username", function (error, username) {
-
                 console.log(logStr() + "User " + username + " has disconnected");
-
                 console.log(logStr() + "usersList was " + JSON.stringify(usersList));
+
                 delete usersListr[usersList[socket.id]]
                 delete usersList[socket.id];
+
                 console.log(logStr() + "usersList is now " + JSON.stringify(usersList));
                 numConnected--;
                 io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
@@ -227,8 +226,7 @@ io.sockets.on("connection", function (socket) {
                       if (index != -1) {
                         publicRoomsList.splice(index, 1);
                         //update public rooms list
-                        var data = {"publicRoomsList": publicRoomsList};
-                        io.sockets.emit("populatePublicRooms", data);
+                        io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
                       }
                     }
                 }
