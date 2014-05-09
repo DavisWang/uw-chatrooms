@@ -53,7 +53,7 @@ io.sockets.on("connection", function (socket) {
         console.log(logStr() + numConnected + " connected");
 
         socket.emit("saveUsername", {"clientUsername": username});
-        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby")});
+        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby"), "allUsernamesList" : getUsernamesList("Lobby")});
         io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
 
         socket.emit("initRoomsList", getUserRoomList(socket), publicRoomsList);
@@ -110,7 +110,7 @@ io.sockets.on("connection", function (socket) {
 
             socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
             socket.join(roomName);
-            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName), "allUsernamesList" : getUsernamesList("Lobby")});
             io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
             console.log(logStr() + "Added user: " + username + " to room: " + roomName);
             console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
@@ -128,7 +128,7 @@ io.sockets.on("connection", function (socket) {
                         socket.emit("joinRoomResponse", {"created" : true, "roomName" : data.roomName, "errorCode" : 0});
 
                         socket.join(data.roomName);
-                        io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName)});
+                        io.sockets.in(data.roomName).emit("loadUsersList", {"roomName" : data.roomName, "usernamesList" : getUsernamesList(data.roomName), "allUsernamesList" : getUsernamesList("Lobby")});
                         io.sockets.in(data.roomName).emit("numConnected", {"roomName" : data.roomName, "numConnected" : io.sockets.clients(data.roomName).length}); //number of clients in a room
                         console.log(logStr() + "Added user: " + username + " to room: " + data.roomName);
                         console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
@@ -151,7 +151,7 @@ io.sockets.on("connection", function (socket) {
         if (io.roomClients[socket.id]["/" + roomName]) {
             socket.get("username", function (error, username) {
                 socket.leave(roomName);
-                io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+                io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName), "allUsernamesList" : getUsernamesList("Lobby")});
                 io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
 
                 console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
@@ -213,11 +213,11 @@ io.sockets.on("connection", function (socket) {
                 for (room in io.sockets.manager.roomClients[socket.id]) {
                     if (room == "") {
                         socket.leave(room);
-                        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby")});
+                        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby"), "allUsernamesList" : getUsernamesList("Lobby")});
                     }
                     else {
                         socket.leave(room.substring(1));
-                        io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1))});
+                        io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1)), "allUsernamesList" : getUsernamesList("Lobby")});
                         io.sockets.in(room.substring(1)).emit("numConnected", {"roomName" : room.substring(1), "numConnected" : io.sockets.clients(room.substring(1)).length});	//number of clients in a room
                     }
 

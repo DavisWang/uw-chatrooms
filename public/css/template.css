@@ -69,9 +69,14 @@ div.username {
   color: #777;
 }
 
-label.username {
+div.create-room-modal-username {
   color: #777;
   margin-bottom: 0px;
+  cursor: pointer;
+}
+
+div.create-room-modal-username-selected {
+  color: #428bca;
 }
 
 div#all-users-list-container {

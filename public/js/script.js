@@ -25,12 +25,12 @@ var usersOnline;
  **/
 function escapeHtml(unsafe) {
     return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
- }
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 /**
  * Transforms a string into an HTML attribute
@@ -115,6 +115,55 @@ function sentMessage() {
     }
 }
 
+//populates public rooms list in the lobby
+function populatePublicRoomsList(data) {
+    $('#public-rooms-list').empty();
+    for (var i = 0 ; i < data.publicRoomsList.length ; i++) {
+        $('#public-rooms-list').append('<div class="public-room-entry" id=' + toClassString(data.publicRoomsList[i]) + 
+          '-public-room><span class="glyphicon glyphicon-home public-room-icon"></span>' + data.publicRoomsList[i] + '</div>');
+        var publicRoomElement = $('div.public-room-entry:contains(' + data.publicRoomsList[i] + ')');
+        publicRoomElement.on({
+            click: function(e) {
+              //join the public room if it hasn't been joined yet, otherwise open the public room's tab
+              var roomName = this.id;
+              var index = roomName.indexOf("-public-room");
+              var roomName = roomName.slice(0, index);
+              roomName = toClassStringr(roomName);
+              var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
+              if (index == -1) {
+                socket.emit("joinRoom", {"roomName" : roomName, "hasAccepted" : true});
+              } else {
+                $('a[href="#room-' + toClassString(roomName) + '"]').click();
+              }
+            }
+        });
+    }
+}
+
+//populates usernames in the create-room modal
+function populateCreateRoomModalUsernames(allUsernamesList) {
+    //empty the create room modal's users list    
+    $('#create-room-modal-invite-user-container').empty();
+    for (var i = 0 ; i < allUsernamesList.length ; i++) {
+      if (allUsernamesList[i] != myUsername) {
+          //populate the create-new-room modal's users list
+          $('#create-room-modal-invite-user-container').append('<div class="create-room-modal-username" data-username="' 
+            + allUsernamesList[i] + '" data-selected="false"> <span class="glyphicon glyphicon-user"></span>' + allUsernamesList[i] + '</div>');
+      }
+    }
+
+    //create username button behaviour
+    $('div.create-room-modal-username').click(function() {
+      if ($(this).data("selected") == "true"){
+        $(this).removeClass("create-room-modal-username-selected");
+        $(this).data("selected","false");
+      } else {
+        $(this).addClass("create-room-modal-username-selected");
+        $(this).data("selected","true");
+      }
+    });
+}
+
 socket.on('disconnect', function (data) {
     console.log('reconnect');
     socket.socket.reconnect();
@@ -151,9 +200,6 @@ socket.on('loadUsersList', function (data) {
 
     $('#usersList-' + roomNameClass).empty();
 
-    //empty the create new room modal's users list    
-    $('#create-room-modal-invite-user-container').empty();
-
     //we only want to update all-users-list when Lobby's usersList is updated, ie. someone joined or left uwcr
     if(data.roomName == "Lobby") {
         usersOnline = data.usernamesList.length;
@@ -167,20 +213,20 @@ socket.on('loadUsersList', function (data) {
     }
 
     $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
-      for (var i = 0 ; i < data.usernamesList.length ; i++) {
-        if (data.usernamesList[i] != myUsername) {
-            $('#usersList-' + roomNameClass).append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
-            if(data.roomName == "Lobby") {
-                $('#all-users-list').append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
-                $('#all-users-list div.username:contains(' + data.usernamesList[i] + ')').click(function (e) {
-                    socket.emit('inviteUser', {'username' : $(this).text(), 'roomName' : currentRoom});
-                });
-            }
-            //Conveniently also populate the create new room modal's users list
-            $('#create-room-modal-invite-user-container').append('<label class="username"> <input type="checkbox" data-username="' 
-              + data.usernamesList[i] + '"> <span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</label><br/>');
-        }
+    for (var i = 0 ; i < data.usernamesList.length ; i++) {
+      if (data.usernamesList[i] != myUsername) {
+          $('#usersList-' + roomNameClass).append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+          if(data.roomName == "Lobby") {
+              $('#all-users-list').append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
+              $('#all-users-list div.username:contains(' + data.usernamesList[i] + ')').click(function (e) {
+                  socket.emit('inviteUser', {'username' : $(this).text(), 'roomName' : currentRoom});
+              });
+          }
+      }
     }
+    
+    //populate the create room modal's users list
+    populateCreateRoomModalUsernames(data.allUsernamesList);
 });
 
 socket.on('roomInvite', function (data) {
@@ -190,7 +236,7 @@ socket.on('roomInvite', function (data) {
 });
 
 socket.on('joinRoomResponse', function (data) {
-    if(data.created) {
+    if (data.created) {
         //adds room to client's userRoomsList array
         userRoomsList.push({'roomName' : data.roomName, 'numNewMsgs': 0});
         var roomNameClass = toClassString(data.roomName);
@@ -229,7 +275,7 @@ socket.on('joinRoomResponse', function (data) {
             $('div#num-connected-' + roomNameClass).show();
 
             //show the all-users-list, since we are in a user created room now
-            if(usersOnline > 1) {
+            if (usersOnline > 1) {
                 $('div#all-users-list-container').show();
             }
         });
@@ -252,7 +298,7 @@ socket.on('joinRoomResponse', function (data) {
         $('ul#tab li:contains(' + data.roomName + ') a').click();
     }
     else {
-        if(data.errorCode == 1) {
+        if (data.errorCode == 1) {
             window.alert("Illegal room name! Room name can only contain alphanumeric characters, spaces, and underscores!");
         }
         else if (data.errorCode == 2) {
@@ -266,30 +312,6 @@ socket.on('joinRoomResponse', function (data) {
         }
     }
 });
-
-function populatePublicRoomsList(data) {
-  $('#public-rooms-list').empty();
-  for (var i = 0 ; i < data.publicRoomsList.length ; i++) {
-    $('#public-rooms-list').append('<div class="public-room-entry" id=' + toClassString(data.publicRoomsList[i]) + 
-      '-public-room><span class="glyphicon glyphicon-home public-room-icon"></span>' + data.publicRoomsList[i] + '</div>');
-    var publicRoomElement = $('div.public-room-entry:contains(' + data.publicRoomsList[i] + ')');
-    publicRoomElement.on({
-        click: function(e) {
-          //join the public room if it hasn't been joined yet, otherwise open the public room's tab
-          var roomName = this.id;
-          var index = roomName.indexOf("-public-room");
-          var roomName = roomName.slice(0, index);
-          roomName = toClassStringr(roomName);
-          var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(roomName);
-          if (index == -1) {
-            socket.emit("joinRoom", {"roomName" : roomName, "hasAccepted" : true});
-          } else {
-            $('a[href="#room-' + toClassString(roomName) + '"]').click();
-          }
-        }
-    });
-  }
-}
 
 socket.on('populatePublicRooms', function (data) {
     populatePublicRoomsList(data);
@@ -359,8 +381,10 @@ $(function() {
             
             //send room invitations to other users if any
             var usersToInvite = new Array();
-            $.each($("#create-room-modal-invite-user-container>label>input:checked"), function() {
-              usersToInvite.push($(this).data("username"));
+            $.each($("#create-room-modal-invite-user-container>div"), function() {
+              if ($(this).data("selected") == "true") {
+                usersToInvite.push($(this).data("username"));
+              }
             });
             for (var i = 0; i < usersToInvite.length; i++) {
               socket.emit('inviteUser', {'username' : usersToInvite[i], 'roomName' : roomName});
