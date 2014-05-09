@@ -14,9 +14,6 @@ var currentRoom;
 //the client's username
 var myUsername;
 
-//stores how many clients are connected to the service, makes showing the all-users-list easier
-var usersOnline;
-
 /**
  * From http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
  * Provides a means to escape user inputted messages
@@ -208,13 +205,9 @@ socket.on('loadUsersList', function (data) {
 
     //we only want to update all-users-list when Lobby's usersList is updated, ie. someone joined or left uwcr
     if(data.roomName == "Lobby") {
-        usersOnline = data.usernamesList.length;
         $('#all-users-list').empty();
-        if (data.usernamesList.length == 1 || currentRoom == "Lobby") {
-            $('#all-users-list-container').hide();
-        }
-        else if (currentRoom != "Lobby") {
-            $('#all-users-list-container').show();
+        if (data.usernamesList.length == 1) {
+            $('#all-users-list').append("(No one's online...)");
         }
     }
 
@@ -281,9 +274,7 @@ socket.on('joinRoomResponse', function (data) {
             $('div#num-connected-' + roomNameClass).show();
 
             //show the all-users-list, since we are in a user created room now
-            if (usersOnline > 1) {
-                $('div#all-users-list-container').show();
-            }
+            $('div#all-users-list-container').show();
         });
 
         //close tab functionality
