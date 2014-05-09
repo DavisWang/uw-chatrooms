@@ -138,7 +138,6 @@ function populatePublicRoomsList(data) {
 }
 
 socket.on('disconnect', function (data) {
-    console.log('reconnect');
     socket.socket.reconnect();
 });
 
