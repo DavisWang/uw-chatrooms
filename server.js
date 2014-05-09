@@ -100,12 +100,13 @@ io.sockets.on("connection", function (socket) {
                 created = true;
             }
 
-            //populate the public room list for everyone
-            if (created && data.isPublic) {
-              publicRoomsList.push(roomName);
-              io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
-            }
-            else if (created) {
+            if (created) {
+                //populate the public room list for everyone if the new room is public
+                if (data.isPublic) {
+                    publicRoomsList.push(roomName);
+                    io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
+                }
+                
                 //joins the room, this is the same logic as in socket.on('joinRoom')
                 socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
                 socket.join(roomName);
