@@ -141,7 +141,7 @@ the other two containers use 90%
 div#username-container {
   margin-bottom: 10px;
   max-height: 45%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 div#public-rooms-container, div#all-users-list-container {
@@ -151,7 +151,7 @@ div#public-rooms-container, div#all-users-list-container {
 div#public-rooms-list, div#all-users-list {
   margin-bottom: 10px;
   max-height: 95%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* Create Room Modal related css */
