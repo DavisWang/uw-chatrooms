@@ -144,24 +144,30 @@ function populatePublicRoomsList(data) {
 function populateCreateRoomModalUsernames(allUsernamesList) {
     //empty the create room modal's users list    
     $('#create-room-modal-invite-user-container').empty();
-    for (var i = 0 ; i < allUsernamesList.length ; i++) {
-      if (allUsernamesList[i] != myUsername) {
-          //populate the create-new-room modal's users list
-          $('#create-room-modal-invite-user-container').append('<div class="create-room-modal-username" data-username="' 
-            + allUsernamesList[i] + '" data-selected="false"> <span class="glyphicon glyphicon-user"></span>' + allUsernamesList[i] + '</div>');
-      }
-    }
+    
+    //if there are no other users online, the user will be presented with "no other users are online"
+    if (allUsernamesList.length == 1) {
+        $('#create-room-modal-invite-user-container').append("(No one's online...)");
+    } else {
+        for (var i = 0 ; i < allUsernamesList.length ; i++) {
+          if (allUsernamesList[i] != myUsername) {
+              //populate the create-new-room modal's users list
+              $('#create-room-modal-invite-user-container').append('<div class="create-room-modal-username" data-username="' 
+                + allUsernamesList[i] + '" data-selected="false"> <span class="glyphicon glyphicon-user"></span>' + allUsernamesList[i] + '</div>');
+          }
+        }
 
-    //create username button behaviour
-    $('div.create-room-modal-username').click(function() {
-      if ($(this).data("selected") == "true"){
-        $(this).removeClass("create-room-modal-username-selected");
-        $(this).data("selected","false");
-      } else {
-        $(this).addClass("create-room-modal-username-selected");
-        $(this).data("selected","true");
-      }
-    });
+        //create username button behaviour
+        $('div.create-room-modal-username').click(function() {
+          if ($(this).data("selected") == "true"){
+            $(this).removeClass("create-room-modal-username-selected");
+            $(this).data("selected","false");
+          } else {
+            $(this).addClass("create-room-modal-username-selected");
+            $(this).data("selected","true");
+          }
+        });
+    }
 }
 
 socket.on('disconnect', function (data) {
