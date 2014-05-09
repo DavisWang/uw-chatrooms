@@ -39,7 +39,7 @@ io.sockets.on("connection", function (socket) {
     username = socket.handshake.query.username;
     console.log(logStr() + "User " + username + " is connecting");
 
-    if(!isValidString(username) || usersListr[username]) {
+    if (!isValidString(username) || usersListr[username]) {
         console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
         socket.emit("kickClient", {"url" : "/error2"});
     }
@@ -63,22 +63,21 @@ io.sockets.on("connection", function (socket) {
         socket.emit("kickClient", {"url" : "/error1"});
     }
 
-    socket.on("sendMessage", function (clientData) {
-        //TODO: validate msg contents
-        if(clientData.messageRoom == "Lobby" || io.roomClients[socket.id]["/" + clientData.messageRoom]) {
+    socket.on("sendMessage", function (data) {
+        if (data.messageRoom == "Lobby" || io.roomClients[socket.id]["/" + data.messageRoom]) {
             socket.get("username", function (error, username) {
-                var data = {"message" : clientData.messageBody, "username" : username, "roomName" : clientData.messageRoom};
-                if (clientData.messageRoom == "Lobby") {
+                var data = {"message" : data.messageBody, "username" : username, "roomName" : data.messageRoom};
+                if (data.messageRoom == "Lobby") {
                     socket.broadcast.to("").emit("sendMessageResponse", data);
                 }
                 else {
-                    socket.broadcast.to(clientData.messageRoom).emit("sendMessageResponse", data);
+                    socket.broadcast.to(data.messageRoom).emit("sendMessageResponse", data);
                 }
-                console.log(logStr() + "User " + username + " send this : " + clientData.messageBody + " to room: " + clientData.messageRoom);
+                console.log(logStr() + "User " + username + " send this : " + data.messageBody + " to room: " + data.messageRoom);
             });
         }
         else {
-            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof sendMessage! Data: " + JSON.stringify(clientData));
+            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof sendMessage! Data: " + JSON.stringify(data));
         }
     });
 
@@ -87,7 +86,7 @@ io.sockets.on("connection", function (socket) {
             var created = false;
             var errorCode = 0;
             var roomName = data.roomName.trim();
-            if(!isValidString(roomName)) {
+            if (!isValidString(roomName)) {
                 errorCode = 1;
             }
             else if (typeof io.sockets.manager.rooms["/" + roomName] !== "undefined") {
@@ -154,7 +153,7 @@ io.sockets.on("connection", function (socket) {
                 socket.leave(roomName);
                 io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
                 io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
-                
+
                 console.log(logStr() + "Removed user: " + username + " from room: " + roomName);
                 console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
 
@@ -189,7 +188,6 @@ io.sockets.on("connection", function (socket) {
                 }
                 else {
                     console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
-                    //TODO emit a message to the socket of an error
                 }
             });
         }
@@ -199,7 +197,7 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("disconnect", function() {
-        if(usersList.hasOwnProperty(socket.id)) {
+        if (usersList.hasOwnProperty(socket.id)) {
             socket.get("username", function (error, username) {
 
                 console.log(logStr() + "User " + username + " has disconnected");
@@ -213,7 +211,7 @@ io.sockets.on("connection", function (socket) {
                 console.log(logStr() + "Number of users left on the service: " + numConnected);
 
                 for (room in io.sockets.manager.roomClients[socket.id]) {
-                    if(room == "") {
+                    if (room == "") {
                         socket.leave(room);
                         io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby")});
                     }
@@ -222,7 +220,7 @@ io.sockets.on("connection", function (socket) {
                         io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1))});
                         io.sockets.in(room.substring(1)).emit("numConnected", {"roomName" : room.substring(1), "numConnected" : io.sockets.clients(room.substring(1)).length});	//number of clients in a room
                     }
-                    
+
                     //remove public room if no one is left in a public room
                     if (io.sockets.clients(room).length == 0) {
                       var index = publicRoomsList.indexOf(room.substring(1));
@@ -245,7 +243,6 @@ function logStr() {
 
 //Determines whether the given string is a proper username or room
 //alphanumeric + underscore + hyphen
-//TODO provide support for spaces?
 function isValidString (string) {
     var valid = /^[a-zA-Z0-9_ ]*$/.test(string) ? true : false;
     return valid;
@@ -254,16 +251,16 @@ function isValidString (string) {
 //given a room, generate a list of usernames that represent users in that room
 function getUsernamesList(room) {
     var usernamesList = new Array();
-    if(room == "Lobby" || room == "") {
+    if (room == "Lobby" || room == "") {
         for (var i = 0 ; i < io.sockets.clients().length ; i++) {
-            if(usersList[io.sockets.clients()[i].id]) {
+            if (usersList[io.sockets.clients()[i].id]) {
                 usernamesList.push(usersList[io.sockets.clients()[i].id]);
             }
         }
     }
     else {
         for (var i = 0 ; i < io.sockets.clients(room).length ; i++) {
-            if(usersList[io.sockets.clients()[i].id]) {
+            if (usersList[io.sockets.clients()[i].id]) {
                 usernamesList.push(usersList[io.sockets.clients(room)[i].id]);
             }
         }
@@ -274,7 +271,7 @@ function getUsernamesList(room) {
 function getUserRoomList(socket) {
     var roomList = new Array();
     for (room in io.sockets.manager.roomClients[socket.id]) {
-        if(room == "") {
+        if (room == "") {
             roomList.push("Lobby");
         }
         else {
@@ -288,7 +285,7 @@ var username;
 app.post("/main", function(req, res){
     console.log(logStr() + "POST Request made to " + "/main");
     username = req.body.username.trim();
-    if(isValidString(username) && !usersListr[username]) {
+    if (isValidString(username) && !usersListr[username]) {
         console.log(logStr() + "User logged in as '" + username + "'");
         res.render("main.jade", {"username" : username});
     }
