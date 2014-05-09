@@ -105,15 +105,18 @@ io.sockets.on("connection", function (socket) {
               publicRoomsList.push(roomName);
               io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
             }
-
-            //joins the room, this is the same logic as in socket.on('joinRoom')
-
-            socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
-            socket.join(roomName);
-            io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-            io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});	//number of clients in a room
-            console.log(logStr() + "Added user: " + username + " to room: " + roomName);
-            console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+            else if (created) {
+                //joins the room, this is the same logic as in socket.on('joinRoom')
+                socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
+                socket.join(roomName);
+                io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+                io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});    //number of clients in a room
+                console.log(logStr() + "Added user: " + username + " to room: " + roomName);
+                console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+            }
+            else {
+                console.log(logStr() + "Cannot create room! Error code: " + errorCode + " Data: " + JSON.stringify(data));
+            }
         });
     });
 
