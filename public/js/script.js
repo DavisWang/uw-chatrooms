@@ -98,6 +98,8 @@ function addMessage(msg, roomName, username, other) {
     else {
         $('#more-msgs').filter(':hidden').fadeIn(1000).delay(3000).fadeOut(3000);
     }
+
+    emojify.run(); //enable emojis
 }
 
 function sentMessage() {
@@ -408,5 +410,10 @@ $(function() {
 
     $('#submit').click(function() {
         sentMessage();
+    });
+
+    emojify.setConfig({
+        emojify_tag_type : "span",
+        img_dir : "/img/emoji/"
     });
 });
