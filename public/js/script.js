@@ -413,7 +413,7 @@ $(function() {
     });
 
     emojify.setConfig({
-        emojify_tag_type : "span",
+        emojify_tag_type : "span.msgContent",
         img_dir : "/img/emoji/"
     });
 });
