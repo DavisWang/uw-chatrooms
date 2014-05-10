@@ -196,31 +196,33 @@ socket.on('loadUsersList', function (data) {
     }
     
   //populate create-room modal's users list - START
-    if (data.allUsernamesList == undefined) { //this is undefined when a user joins/leaves/creates a room - no new users are introduced so no need to change the list
-        //do nothing
-    } else if (data.allUsernamesList.length == 1) { //if there are no other users online, the user will be presented with "no one's online"
-        $('#create-room-modal-invite-user-container').empty();
-        $('#create-room-modal-invite-user-container').append("(No one's online...)");
-    } else {
-        $('#create-room-modal-invite-user-container').empty();
-        for (var i = 0 ; i < data.allUsernamesList.length ; i++) {
-          if (data.allUsernamesList[i] != myUsername) {
-              //populate the create-new-room modal's users list
-              $('#create-room-modal-invite-user-container').append('<div class="create-room-modal-username" data-username="' 
-                + data.allUsernamesList[i] + '" data-selected="false"> <span class="glyphicon glyphicon-user"></span>' + data.allUsernamesList[i] + '</div>');
+  //allUsernamesList is undefined when a user joins/leaves/creates a room - no new users are introduced so no need to update the list
+  //allUsernamesList is defined when a user connects/disconnects - needs to update the list
+    if (data.allUsernamesList !== undefined) {
+      if (data.allUsernamesList.length == 1) { //if there are no other users online, the user will be presented with "no one's online"
+          $('#create-room-modal-invite-user-container').empty();
+          $('#create-room-modal-invite-user-container').append("(No one's online...)");
+      } else {
+          $('#create-room-modal-invite-user-container').empty();
+          for (var i = 0 ; i < data.allUsernamesList.length ; i++) {
+            if (data.allUsernamesList[i] != myUsername) {
+                //populate the create-new-room modal's users list
+                $('#create-room-modal-invite-user-container').append('<div class="create-room-modal-username" data-username="' 
+                  + data.allUsernamesList[i] + '" data-selected="false"> <span class="glyphicon glyphicon-user"></span>' + data.allUsernamesList[i] + '</div>');
+            }
           }
-        }
 
-        //create username button behaviour
-        $('div.create-room-modal-username').click(function() {
-          if ($(this).data("selected") == "true"){
-            $(this).removeClass("create-room-modal-username-selected");
-            $(this).data("selected", "false");
-          } else {
-            $(this).addClass("create-room-modal-username-selected");
-            $(this).data("selected", "true");
-          }
-        });
+          //create username button behaviour
+          $('div.create-room-modal-username').click(function() {
+            if ($(this).data("selected") == "true"){
+              $(this).removeClass("create-room-modal-username-selected");
+              $(this).data("selected", "false");
+            } else {
+              $(this).addClass("create-room-modal-username-selected");
+              $(this).data("selected", "true");
+            }
+          });
+      }
     }
   //populate create-room modal's users list - END
 });
