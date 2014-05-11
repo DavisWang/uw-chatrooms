@@ -44,6 +44,9 @@ io.sockets.on("connection", function (socket) {
         socket.emit("kickClient", {"url" : "/error2"});
     }
     else if (typeof username !== "undefined" && typeof username != null) {
+        //delete tabs from previous sessions for clients
+        socket.emit("deleteTabs");
+        
         socket.set("username", username);
         usersList[socket.id] = username;
         usersListr[username] = socket.id;
