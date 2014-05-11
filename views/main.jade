@@ -66,11 +66,10 @@ block content
 			div.modal-content
 				div.modal-header
 					button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
-					h4#create-room-modal-label.modal-title Cannot Invite User!
+					h4#failed-invitation-modal-label.modal-title Cannot Invite User!
 				div.modal-body
 				div.modal-footer
 					button#failed-invitation-modal-ok-button.btn.btn-primary(type="button" data-dismiss="modal") OK
-
 
 block bottom
 	script(src="/socket.io/socket.io.js")
