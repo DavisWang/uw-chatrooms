@@ -61,6 +61,17 @@ block content
 					button#invitation-modal-decline-button.btn.btn-default(type="button" data-dismiss="modal") Decline
 					button#invitation-modal-accept-button.btn.btn-primary Accept
 
+	div#failed-invitation-modal.modal.fade(tabindex="-1", role="dialog", aria-hidden="true" aria-labelledby="failed-invitation-modal-label")
+		div.modal-dialog.modal-sm
+			div.modal-content
+				div.modal-header
+					button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+					h4#create-room-modal-label.modal-title Cannot Invite User!
+				div.modal-body
+				div.modal-footer
+					button#failed-invitation-modal-ok-button.btn.btn-primary(type="button" data-dismiss="modal") OK
+
+
 block bottom
 	script(src="/socket.io/socket.io.js")
 	script.

@@ -310,8 +310,13 @@ socket.on('joinRoomResponse', function (data) {
 });
 
 socket.on('populatePublicRooms', function (data) {
-    populatePublicRoomsList(data);
+  populatePublicRoomsList(data);
 });
+
+socket.on("failedInvitation", function (data) {
+  $('#failed-invitation-modal>div>div>div.modal-body').text("Cannot invite user: " + data.invitee + ", they seem to already be in room: " + data.roomName);
+  $('#failed-invitation-modal').modal('show');
+})
 
 $(function() {
     //the default active room is Lobby

@@ -191,6 +191,7 @@ io.sockets.on("connection", function (socket) {
                 }
                 else {
                     console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
+                    socket.emit("failedInvitation", {"invitee" : data.username, "roomName" : data.roomName});
                 }
             });
         }
