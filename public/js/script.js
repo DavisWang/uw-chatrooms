@@ -198,7 +198,7 @@ socket.on('loadUsersList', function (data) {
   //populate create-room modal's users list - START
   //allUsernamesList is undefined when a user joins/leaves/creates a room - no new users are introduced so no need to update the list
   //allUsernamesList is defined when a user connects/disconnects - needs to update the list
-    if (data.allUsernamesList !== undefined) {
+    if (typeof data.allUsernamesList !== "undefined") {
       if (data.allUsernamesList.length == 1) { //if there are no other users online, the user will be presented with "no one's online"
           $('#create-room-modal-invite-user-container').empty();
           $('#create-room-modal-invite-user-container').append("(No one's online...)");
