@@ -319,9 +319,20 @@ socket.on("failedInvitation", function (data) {
 });
 
 socket.on("deleteTabs", function () {
-    //clear tabs left from previous sessions if any
-    for (var i = 2; i < $("ul#tab li").length; i++) {
-      $("ul#tab li:eq(" + i + ")").remove();
+    //empty Lobby content
+    $("div#room-Lobby>div").empty();
+    //put focus on Lobby tab
+    $('ul#tab a:contains("Lobby")').tab('show');
+    currentRoom = "Lobby";
+    //remove tabs from previous sessions
+    var length = $("ul#tab>li").length;
+    for (var i = 2; i < length; i++) {
+      $("ul#tab>li:eq(2)").remove();
+    }
+    //remove tab contents
+    length = $("div#chat-panel>div").length;
+    for (var i = 3; i < length; i++) {
+      $("div#chat-panel>div:eq(3)").remove();
     }
 });
 
