@@ -56,6 +56,7 @@ io.sockets.on("connection", function (socket) {
         console.log(logStr() + numConnected + " connected");
 
         socket.emit("saveUsername", {"clientUsername": username});
+
         io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby"), "allUsernamesList" : getUsernamesList("Lobby")});
         io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
 
@@ -120,6 +121,7 @@ io.sockets.on("connection", function (socket) {
             }
             else {
                 console.log(logStr() + "Cannot create room! Error code: " + errorCode + " Data: " + JSON.stringify(data));
+                socket.emit("joinRoomResponse", {"created" : created, "errorCode" : errorCode});
             }
         });
     });
