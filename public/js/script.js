@@ -155,7 +155,7 @@ socket.on('numConnected', function (data) {
     if (data.roomName == "Lobby") {
       $('#num-connected-Lobby').html('Users online: ' + data.numConnected);
     } else {
-      $('#num-connected-' + data.roomName).html('Users in room: ' + data.numConnected);
+      $('#num-connected-' + toClassString(data.roomName)).html('Users in room: ' + data.numConnected);
     }
 });
 

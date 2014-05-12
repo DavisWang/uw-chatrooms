@@ -101,7 +101,7 @@ io.sockets.on("connection", function (socket) {
                     errorCode = 3;
                 }
                 else {
-                    console.log(logStr() + "User " + username + " created room name: '" + roomName + "'");
+                    console.log(logStr() + "User " + username + " created room name: '" + roomName + "', isPublic: " + data.isPublic);
                     created = true;
                 }
 
