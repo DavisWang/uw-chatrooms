@@ -86,44 +86,49 @@ io.sockets.on("connection", function (socket) {
     });
 
     socket.on("createRoom", function (data) {
-        socket.get("username", function (error, username) {
-            var created = false;
-            var errorCode = 0;
-            var roomName = data.roomName.trim();
-            if (!isValidString(roomName)) {
-                errorCode = 1;
-            }
-            else if (typeof io.sockets.manager.rooms["/" + roomName] !== "undefined") {
-                errorCode = 2;
-            }
-            else if (roomName == "Lobby") {
-                errorCode = 3;
-            }
-            else {
-                console.log(logStr() + "User " + username + " created room name: '" + roomName + "'");
-                created = true;
-            }
-
-            if (created) {
-                //populate the public room list for everyone if the new room is public
-                if (data.isPublic) {
-                    publicRoomsList.push(roomName);
-                    io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
+        if(typeof data.roomName === "string" && typeof data.isPublic === "boolean") {
+            socket.get("username", function (error, username) {
+                var created = false;
+                var errorCode = 0;
+                var roomName = data.roomName.trim();
+                if (!isValidString(roomName)) {
+                    errorCode = 1;
                 }
-                
-                //joins the room, this is the same logic as in socket.on('joinRoom')
-                socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
-                socket.join(roomName);
-                io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
-                io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});    //number of clients in a room
-                console.log(logStr() + "Added user: " + username + " to room: " + roomName);
-                console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
-            }
-            else {
-                console.log(logStr() + "Cannot create room! Error code: " + errorCode + " Data: " + JSON.stringify(data));
-                socket.emit("joinRoomResponse", {"created" : created, "errorCode" : errorCode});
-            }
-        });
+                else if (typeof io.sockets.manager.rooms["/" + roomName] !== "undefined") {
+                    errorCode = 2;
+                }
+                else if (roomName == "Lobby") {
+                    errorCode = 3;
+                }
+                else {
+                    console.log(logStr() + "User " + username + " created room name: '" + roomName + "'");
+                    created = true;
+                }
+
+                if (created) {
+                    //populate the public room list for everyone if the new room is public
+                    if (data.isPublic) {
+                        publicRoomsList.push(roomName);
+                        io.sockets.emit("populatePublicRooms", {"publicRoomsList" : publicRoomsList});
+                    }
+
+                    //joins the room, this is the same logic as in socket.on('joinRoom')
+                    socket.emit("joinRoomResponse", {"created" : created, "roomName" : roomName, "errorCode" : errorCode});
+                    socket.join(roomName);
+                    io.sockets.in(roomName).emit("loadUsersList", {"roomName" : roomName, "usernamesList" : getUsernamesList(roomName)});
+                    io.sockets.in(roomName).emit("numConnected", {"roomName" : roomName, "numConnected" : io.sockets.clients(roomName).length});    //number of clients in a room
+                    console.log(logStr() + "Added user: " + username + " to room: " + roomName);
+                    console.log(logStr() + "User: " + username + " is in rooms: " + JSON.stringify(io.roomClients[socket.id]));
+                }
+                else {
+                    console.log(logStr() + "Cannot create room! Error code: " + errorCode + " Data: " + JSON.stringify(data));
+                    socket.emit("joinRoomResponse", {"created" : created, "errorCode" : errorCode});
+                }
+            });
+        }
+        else {
+            console.log(logStr() + "Room name or isPublic isn't of the correct types! " + JSON.stringify(data));
+        }
     });
 
     socket.on("joinRoom", function (data) {
@@ -185,7 +190,8 @@ io.sockets.on("connection", function (socket) {
     //data.username: who to invite
     //data.roomName: the room to invite to
     socket.on("inviteUser", function (data) {
-        if (io.roomClients[socket.id]["/" + data.roomName]) {
+        if (typeof data.roomName === "string" && io.roomClients[socket.id]["/" + data.roomName]) {
+            data.roomName = data.roomName.trim();
             socket.get("username", function (error, username) {
                 //cannot invite someone already in room
                 if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {

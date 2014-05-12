@@ -380,8 +380,8 @@ $(function() {
 
     $('#create-room-button').click(function () {
         var roomName = $('input#create-room-modal-input').val();
-        //set isPublic to true (1) if checkbox is checked, otherwise false (0)
-        var isPublic = $('input#public-room-checkbox').prop("checked") ? 1 : 0;
+        //set isPublic to true if checkbox is checked, otherwise false
+        var isPublic = $('input#public-room-checkbox').prop("checked") ? true : false;
         if (roomName) {
             socket.emit('createRoom', {"roomName" : roomName, "isPublic" : isPublic});
             $('input#create-room-modal-input').val('');
