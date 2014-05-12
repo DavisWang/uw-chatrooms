@@ -57,7 +57,8 @@ io.sockets.on("connection", function (socket) {
 
         socket.emit("saveUsername", {"clientUsername": username});
 
-        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby"), "allUsernamesList" : getUsernamesList("Lobby")});
+        var initialUsernamesList = getUsernamesList("Lobby");
+        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : initialUsernamesList, "allUsernamesList" : initialUsernamesList});
         io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
 
         socket.emit("initRoomsList", getUserRoomList(socket), publicRoomsList);
@@ -230,16 +231,13 @@ io.sockets.on("connection", function (socket) {
                 io.sockets.emit("numConnected", {"roomName" : "Lobby" , "numConnected" : numConnected});
                 console.log(logStr() + "Number of users left on the service: " + numConnected);
 
+                socket.leave("");
+                var usernamesList = getUsernamesList("Lobby");
+                io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : usernamesList, "allUsernamesList" : usernamesList});
                 for (room in io.sockets.manager.roomClients[socket.id]) {
-                    if (room == "") {
-                        socket.leave(room);
-                        io.sockets.emit("loadUsersList", {"roomName" : "Lobby", "usernamesList" : getUsernamesList("Lobby"), "allUsernamesList" : getUsernamesList("Lobby")});
-                    }
-                    else {
-                        socket.leave(room.substring(1));
-                        io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1)), "allUsernamesList" : getUsernamesList("Lobby")});
-                        io.sockets.in(room.substring(1)).emit("numConnected", {"roomName" : room.substring(1), "numConnected" : io.sockets.clients(room.substring(1)).length});	//number of clients in a room
-                    }
+                    socket.leave(room.substring(1));
+                    io.sockets.emit("loadUsersList", {"roomName" : room.substring(1), "usernamesList" : getUsernamesList(room.substring(1)), "allUsernamesList" : usernamesList});
+                    io.sockets.in(room.substring(1)).emit("numConnected", {"roomName" : room.substring(1), "numConnected" : io.sockets.clients(room.substring(1)).length});	//number of clients in a room
 
                     //remove public room if no one is left in a public room
                     if (io.sockets.clients(room).length == 0) {
@@ -247,10 +245,10 @@ io.sockets.on("connection", function (socket) {
                       if (index != -1) {
                         publicRoomsList.splice(index, 1);
                         //update public rooms list
-                        io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
                       }
                     }
                 }
+                io.sockets.emit("populatePublicRooms", {"publicRoomsList": publicRoomsList});
             });
         }
     });
