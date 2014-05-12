@@ -43,7 +43,10 @@ io.sockets.on("connection", function (socket) {
         console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
         socket.emit("kickClient", {"url" : "/error2"});
     }
-    else if (typeof username !== "undefined" && typeof username != null) {
+    else if (typeof username !== "undefined" && typeof username != null) {        
+        //delete client's tabs from previous sessions
+        socket.emit("deleteTabs");
+        
         socket.set("username", username);
         usersList[socket.id] = username;
         usersListr[username] = socket.id;

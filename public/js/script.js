@@ -316,11 +316,29 @@ socket.on('populatePublicRooms', function (data) {
 socket.on("failedInvitation", function (data) {
   $('#failed-invitation-modal>div>div>div.modal-body').text("Cannot invite user: " + data.invitee + ", they seem to already be in room: " + data.roomName);
   $('#failed-invitation-modal').modal('show');
-})
+});
+
+socket.on("deleteTabs", function () {
+    //empty Lobby content
+    $("div#room-Lobby>div").empty();
+    //put focus on Lobby tab
+    $('ul#tab a:contains("Lobby")').tab('show');
+    currentRoom = "Lobby";
+    //remove tabs from previous sessions
+    var length = $("ul#tab>li").length;
+    for (var i = 2; i < length; i++) {
+      $("ul#tab>li:eq(2)").remove();
+    }
+    //remove tab contents
+    length = $("div#chat-panel>div").length;
+    for (var i = 3; i < length; i++) {
+      $("div#chat-panel>div:eq(3)").remove();
+    }
+});
 
 $(function() {
     //the default active room is Lobby
-    currentRoom = "Lobby"
+    currentRoom = "Lobby";
 
     $('#message-input').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -334,7 +352,7 @@ $(function() {
         $(this).tab('show');
         $('div.usersList').hide(); //hide all other usersLists
         $('div#usersList-Lobby').show(); //show the main usersList
-        currentRoom = "Lobby"
+        currentRoom = "Lobby";
 
         //hide badge for the room after user clicks on the room
         var index = userRoomsList.map(function(e) { return e.roomName; }).indexOf(currentRoom);
