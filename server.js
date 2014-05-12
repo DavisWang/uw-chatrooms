@@ -190,24 +190,29 @@ io.sockets.on("connection", function (socket) {
     //data.username: who to invite
     //data.roomName: the room to invite to
     socket.on("inviteUser", function (data) {
-        if (typeof data.roomName === "string" && io.roomClients[socket.id]["/" + data.roomName]) {
+        if(typeof data.roomName === "string") {
             data.roomName = data.roomName.trim();
-            socket.get("username", function (error, username) {
-                //cannot invite someone already in room
-                if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
-                    //set room invited variable so we can validate it later
-                    io.sockets.socket(usersListr[data.username]).roomInvited = data.roomName;
-                    io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
-                    console.log(logStr() + "User: " + username + " invited user: " + data.username + " to room: " + data.roomName);
-                }
-                else {
-                    console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
-                    socket.emit("failedInvitation", {"invitee" : data.username, "roomName" : data.roomName});
-                }
-            });
+            if (io.roomClients[socket.id]["/" + data.roomName]) {
+                socket.get("username", function (error, username) {
+                    //cannot invite someone already in room
+                    if (usersListr[data.username] && !io.sockets.manager.roomClients[usersListr[data.username]]["/" + data.roomName]) {
+                        //set room invited variable so we can validate it later
+                        io.sockets.socket(usersListr[data.username]).roomInvited = data.roomName;
+                        io.sockets.socket(usersListr[data.username]).emit("roomInvite", {"inviter" : username, "roomName" : data.roomName});
+                        console.log(logStr() + "User: " + username + " invited user: " + data.username + " to room: " + data.roomName);
+                    }
+                    else {
+                        console.log(logStr() + "Cannot invite user: " + data.username + " to room: " + data.roomName);
+                        socket.emit("failedInvitation", {"invitee" : data.username, "roomName" : data.roomName});
+                    }
+                });
+            }
+            else {
+                console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof inviteUser! Data: " + JSON.stringify(data));
+            }
         }
         else {
-            console.log(logStr() + "User: " + usersList[socket.id] + " tried to spoof inviteUser! Data: " + JSON.stringify(data));
+            console.log(logStr() + "Room name isn't of the correct type! " + JSON.stringify(data));
         }
     });
 
