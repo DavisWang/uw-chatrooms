@@ -319,21 +319,13 @@ socket.on("failedInvitation", function (data) {
 });
 
 socket.on("deleteTabs", function () {
-    //empty Lobby content
-    $("div#room-Lobby>div").empty();
     //put focus on Lobby tab
     $('ul#tab a:contains("Lobby")').tab('show');
     currentRoom = "Lobby";
     //remove tabs from previous sessions
-    var length = $("ul#tab>li").length;
-    for (var i = 2; i < length; i++) {
-      $("ul#tab>li:eq(2)").remove();
-    }
+    $("ul#tab>li+li+li").remove();
     //remove tab contents
-    length = $("div#chat-panel>div").length;
-    for (var i = 3; i < length; i++) {
-      $("div#chat-panel>div:eq(3)").remove();
-    }
+    $("div#chat-panel>div+div+div+div").remove();
 });
 
 $(function() {
