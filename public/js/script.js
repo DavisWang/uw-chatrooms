@@ -85,8 +85,10 @@ function addMessage(msg, roomName, username, other) {
 
     //append to the right div/ie to the right room
     var bgCSSClass = other ? "bg-primary" : "bg-info";
-    $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message ' + bgCSSClass + '"><span class="msgUser">'
-      + username + '</span> : <span class="msgContent">' + escapeHtml(msg) + '</span>' + '<span class="message-timestamp">'
+    bgCSSClass = username == "@UWBot" ? "bg-success" : bgCSSClass;
+    var message = username == "@UWBot" ? msg : escapeHtml(msg);
+    $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message ' + bgCSSClass + '"><span class="msg-user">'
+      + username + '</span> : <span class="msg-content">' + message + '</span>' + '<span class="message-timestamp">'
       + time + '</span>' + '</div>');
 
     var roomChatEntries = $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries');
@@ -430,7 +432,7 @@ $(function() {
     });
 
     emojify.setConfig({
-        emojify_tag_type : "span.msgContent",
+        emojify_tag_type : "span.msg-content",
         img_dir : "/img/emoji/"
     });
 });

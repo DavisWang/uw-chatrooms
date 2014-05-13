@@ -1,10 +1,12 @@
-var port = process.env.OPENSHIFT_NODEJS_PORT || 3000  
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000
 , ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
 var express = require("express"), app = express()
 , http = require("http")
 , server = http.createServer(app).listen(port, ip)
 , io = require("socket.io").listen(server);
+
+var bot = require("./public/js/uwbot.js");
 
 io.enable('browser client minification'); // send minified client
 io.enable('browser client etag'); // apply etag caching logic based on version number
@@ -30,6 +32,8 @@ var usersListr = {};
 //public rooms list
 var publicRoomsList = ["Lobby"];
 
+var botName = "@UWBOT";
+var otherBotName = "@BOT";
 
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
@@ -43,7 +47,7 @@ io.sockets.on("connection", function (socket) {
         console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
         socket.emit("kickClient", {"url" : "/error2"});
     }
-    else if (typeof username !== "undefined" && typeof username != null) {        
+    else if (typeof username !== "undefined" && typeof username != null) {
         //delete client's tabs from previous sessions
         socket.emit("deleteTabs");
         
@@ -78,6 +82,24 @@ io.sockets.on("connection", function (socket) {
                 else {
                     socket.broadcast.to(data.messageRoom).emit("sendMessageResponse", response);
                 }
+
+                //if this is a command addressed to bot
+                if(data.messageBody.slice(0, otherBotName.length).toUpperCase() === otherBotName ||
+                    data.messageBody.slice(0, botName.length).toUpperCase() === botName) {
+                    console.log(logStr() + "Processing @uwbot command: " + data.messageBody);
+                    bot.process(data.messageBody, function (responseStr){
+                        response.message = responseStr;
+                        response.username = "@UWBot";
+                        console.log(logStr() + "Bot response: " + JSON.stringify(response));
+                        if(data.messageRoom == "Lobby") {
+                            io.sockets.emit("sendMessageResponse", response);
+                        }
+                        else {
+                            io.sockets.in(data.messageRoom).emit("sendMessageResponse", response);
+                        }
+                    });
+                }
+
                 console.log(logStr() + "User " + username + " send this : " + data.messageBody + " to room: " + data.messageRoom);
             });
         }

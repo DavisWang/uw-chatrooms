@@ -20,6 +20,14 @@ div.message {
   position: relative;
 }
 
+span.msg-user {
+  font-weight: bold;
+}
+
+span.msg-content {
+  white-space: pre-wrap;
+}
+
 .emoji {
   width: 1.25em;
   height: 1.25em;
