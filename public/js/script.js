@@ -321,8 +321,10 @@ socket.on("failedInvitation", function (data) {
 });
 
 socket.on("deleteTabs", function () {
-    //put focus on Lobby tab
-    $('ul#tab a:contains("Lobby")').tab('show');
+    //define a temporary userRoomsList so clicking on Lobby would not result in an error
+    userRoomsList = [{'roomName': "Lobby", numNewMsgs: 0}];
+    //click on Lobby tab
+    $('ul#tab a:contains("Lobby")').click();
     currentRoom = "Lobby";
     //remove tabs from previous sessions
     $("ul#tab>li+li+li").remove();
