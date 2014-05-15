@@ -32,8 +32,8 @@ var usersListr = {};
 //public rooms list
 var publicRoomsList = ["Lobby"];
 
-var botName = "@UWBOT";
-var otherBotName = "@BOT";
+var botName = "@UWBOT ";
+var otherBotName = "@BOT ";
 
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
@@ -85,7 +85,9 @@ io.sockets.on("connection", function (socket) {
 
                 //if this is a command addressed to bot
                 if(data.messageBody.slice(0, otherBotName.length).toUpperCase() === otherBotName ||
-                    data.messageBody.slice(0, botName.length).toUpperCase() === botName) {
+                    data.messageBody.slice(0, botName.length).toUpperCase() === botName ||
+                    data.messageBody.toUpperCase() === otherBotName.trim() ||
+                    data.messageBody.toUpperCase() === botName.trim()) {
                     console.log(logStr() + "Processing @uwbot command: " + data.messageBody);
                     bot.process(data.messageBody, function (responseStr){
                         response.message = responseStr;
