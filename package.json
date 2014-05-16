@@ -9,7 +9,8 @@
   "dependencies": {
     "jade": "~1.2.0",
     "socket.io": "~0.9.16",
-    "express": "~3.4.8"
+    "express": "~3.4.8",
+    "uwcr-chatbot": "git+https://git@github.com/DavisWang/uwcr-chatbot.git"
   },
   "devDependencies": {},
   "scripts": {

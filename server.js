@@ -6,7 +6,7 @@ var express = require("express"), app = express()
 , server = http.createServer(app).listen(port, ip)
 , io = require("socket.io").listen(server);
 
-var bot = require("./public/js/uwbot.min.js");
+var bot = require("uwcr-chatbot");
 
 io.enable('browser client minification'); // send minified client
 io.enable('browser client etag'); // apply etag caching logic based on version number
