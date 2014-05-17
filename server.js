@@ -44,15 +44,18 @@ var numConnected = 0;
 
 io.sockets.on("connection", function (socket) {
     try {
+        //get username from query string
         username = socket.handshake.query.username;
         console.log(logStr() + "User " + username + " is connecting");
 
+        //ensure username is valid
         if (!isValidString(username) || usersListr[username]) {
             console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
             socket.emit("kickClient", {"url" : "/error2"});
         }
         else if (typeof username !== "undefined" && typeof username != null) {
             //delete client's tabs from previous sessions
+            //doesn't do anything if user is first time
             socket.emit("deleteTabs");
 
             socket.set("username", username);
@@ -90,6 +93,7 @@ io.sockets.on("connection", function (socket) {
                     else {
                         socket.broadcast.to(data.messageRoom).emit("sendMessageResponse", response);
                     }
+                    console.log(logStr() + "User " + username + " send this : " + data.messageBody + " to room: " + data.messageRoom);
 
                     //if this is a command addressed to bot
                     if(data.messageBody.slice(0, otherBotName.length).toUpperCase() === otherBotName ||
@@ -109,8 +113,6 @@ io.sockets.on("connection", function (socket) {
                             }
                         });
                     }
-
-                    console.log(logStr() + "User " + username + " send this : " + data.messageBody + " to room: " + data.messageRoom);
                 });
             }
             else {

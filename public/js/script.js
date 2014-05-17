@@ -86,7 +86,7 @@ function addMessage(msg, roomName, username, other) {
     time = hour + ":" + minute + ":" + second + " " + sign;
 
     //append to the right div/ie to the right room
-    var bgCSSClass = other ? "bg-primary" : "bg-info";
+    var bgCSSClass = other ? "bg-info" : "bg-primary";
     bgCSSClass = username == "@UWBot" ? "bg-success" : bgCSSClass;
     var message = username == "@UWBot" ? msg : escapeHtml(msg);
     $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries').append('<div class="message ' + bgCSSClass + '"><span class="msg-user">'
