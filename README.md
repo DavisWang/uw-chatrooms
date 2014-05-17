@@ -14,3 +14,8 @@ Collaborators:
 Davis Wang <davis@daviswang.com>
 
 Jason Chan <jason810118@gmail.com>
+
+License
+-------
+
+MIT
