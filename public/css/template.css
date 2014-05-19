@@ -150,6 +150,13 @@ div.my-username {
   color: #428bca;
 }
 
+div.bot-username {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #5cb85c;
+}
+
 /*
 side-panel contains 3 containers, num-connected-container
 username-container, and public-rooms-container, there is an

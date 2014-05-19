@@ -187,6 +187,7 @@ socket.on('loadUsersList', function (data) {
     }
 
     $('#usersList-' + roomNameClass).append('<div class="my-username"><span class="glyphicon glyphicon-user"></span>' + myUsername + " (You)" + '</div>');
+    $('#usersList-' + roomNameClass).append('<div class="bot-username"><span class="glyphicon glyphicon-user"></span>UW Bot</div>');
     for (var i = 0 ; i < data.usernamesList.length ; i++) {
       if (data.usernamesList[i] != myUsername) {
           $('#usersList-' + roomNameClass).append('<div class="username"><span class="glyphicon glyphicon-user"></span>' + data.usernamesList[i] + '</div>');
