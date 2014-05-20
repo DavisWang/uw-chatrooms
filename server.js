@@ -401,7 +401,10 @@ app.get("/error2", function(req, res){
 });
 
 app.get("/", function(req, res){
-    console.log(logStr() + "GET Request made to " + "/");
+    if(req.headers["user-agent"]) {
+        console.log(logStr() + "GET Request made to " + "/");
+        console.log("\tRequest headers: " + JSON.stringify(req.headers));
+    }
     res.render("login.jade");
 });
 
