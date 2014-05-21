@@ -401,7 +401,8 @@ app.get("/error2", function(req, res){
 });
 
 app.get("/", function(req, res){
-    if(req.headers["user-agent"]) {
+    //we want to ignore some OpenShift specific stuff that makes requests to the service
+    if(req.headers["user-agent"] && req.headers["user-agent"] !== "Ruby") {
         console.log(logStr() + "GET Request made to " + "/");
         console.log("\tRequest headers: " + JSON.stringify(req.headers));
     }
