@@ -1,0 +1,17 @@
+extends base
+
+block content
+	div.jumbotron
+		h1 Welcome to UW Chatrooms
+		h3 Quick impromptu chatrooms, no signups, no user data stored!
+
+		form#login-form(method="POST", action="/main")
+			div.input-group
+				input#username-input.form-control(type="text", name="username", placeholder="Enter a name and start chatting!")
+				span.input-group-btn
+					button#set-username.btn.btn-info(type="submit button") Go!
+
+		if (usernameInvalid) 
+			div.label.label-danger Usernames can only contain alphanumeric characters, spaces, underscores, and be unique!
+		if (serverRestart)
+			div.label.label-danger Uh-oh! Your session has expired, please login again!
