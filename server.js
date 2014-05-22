@@ -33,6 +33,7 @@ app.use(sass.middleware({
     debug: true,
     outputStyle: 'compressed'
 }));
+app.use(express.static(__dirname + 'public/css'));
 
 //the username currently being handled
 var username;
