@@ -1,56 +1,58 @@
 doctype html
 html
-	head
-		title UW Chatrooms
-		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
-		link(rel="icon", href="/favicon.ico", type="image/x-icon")
-		link(rel="stylesheet", href="/css/bootstrap.min.css", type="text/css")
-		link(rel="stylesheet", href="/css/template.css", type="text/css")
-		link(rel="stylesheet", href="http://fonts.googleapis.com/css?family=Kreon:300, 400", type="text/css")
+  head
+    title UW Chatrooms
+    link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
+    link(rel="icon", href="/favicon.ico", type="image/x-icon")
+    link(rel="stylesheet", href="/css/bootstrap.min.css", type="text/css")
+    link(rel="stylesheet", href="/css/template.css", type="text/css")
+    link(rel="stylesheet", href="http://fonts.googleapis.com/css?family=Kreon:300, 400", type="text/css")
+    link(rel="stylesheet", href="/css/custom.css", type="text/css")
 
-		block head
+    block head
 
-	body.noscroll
-		div.container
-			nav.navbar.navbar-default.navbar-fixed-top
-				div.container
-					a.navbar-brand(href="/") UW Chatrooms 
-						span.glyphicon.glyphicon-comment
+  body.noscroll
+    div#main-background
+      div.container
+        nav.navbar.navbar-default.navbar-fixed-top
+          div.container
+            a.navbar-brand(href="/") UW Chatrooms
+              span.glyphicon.glyphicon-comment
 
-					div.collapse.navbar-collapse
-						ul.nav.navbar-nav.navbar-right
-							li.dropdown
-								a.dropdown-toggle(href="#", data-toggle="dropdown")
-									span.glyphicon.glyphicon-info-sign
-								ul.dropdown-menu
-									li
-										a#help(href="#", rel="popover") Help!
-									li.divider
-									li
-										a#about(href="/aboutus") About!
-									li
-										a(href="mailto:davis@daviswang.com") Contact Me!
-									li
-										a(href="http://www.daviswang.com") Visit My Website!
+            div.collapse.navbar-collapse
+              ul.nav.navbar-nav.navbar-right
+                li.dropdown
+                  a.dropdown-toggle(href="#", data-toggle="dropdown")
+                    span.glyphicon.glyphicon-info-sign
+                  ul.dropdown-menu
+                    li
+                      a#help(href="#", rel="popover") Help!
+                    li.divider
+                    li
+                      a#about(href="/aboutus") About!
+                    li
+                      a(href="mailto:davis@daviswang.com") Contact Me!
+                    li
+                      a(href="http://www.daviswang.com") Visit My Website!
 
-			div.row.chat-container
-				block content
+        div.row.chat-container
+          block content
 
-		script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
-		script(src="/js/bootstrap.min.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
+    script(src="/js/bootstrap.min.js")
 
-		script.
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-			ga('create', 'UA-48780799-2', 'uw-chatrooms.rhcloud.com');
-			ga('send', 'pageview');
-		script.
-			$("#help").popover({
-				placement : "bottom",
-				content : "Click the '+' to create a room, invite other users by clicking their names when creating a room, or click their names under 'All Users' to invite them to your current room. There is also a chat bot, type in '@bot help' to get a list of commands, that's it!",
-				trigger : "hover"
-			});
+    script.
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-48780799-2', 'uw-chatrooms.rhcloud.com');
+      ga('send', 'pageview');
+    script.
+      $("#help").popover({
+        placement : "bottom",
+        content : "Click the '+' to create a room, invite other users by clicking their names when creating a room, or click their names under 'All Users' to invite them to your current room. There is also a chat bot, type in '@bot help' to get a list of commands, that's it!",
+        trigger : "hover"
+      });
 
-		block bottom
+    block bottom

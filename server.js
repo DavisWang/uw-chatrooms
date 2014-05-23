@@ -18,11 +18,6 @@ var jade = require("jade");
 app.set("views", __dirname + "/views");
 app.set("view engine", "jade");
 app.set("view options", { layout: false });
-app.configure(function() {
-    app.use(express.static(__dirname + "/public"));
-    app.use(express.urlencoded());
-    app.use(app.router);
-});
 
 // Sass setup
 var sass = require("node-sass");
@@ -33,7 +28,12 @@ app.use(sass.middleware({
     debug: true,
     outputStyle: 'compressed'
 }));
-app.use(express.static(__dirname + 'public/css'));
+
+app.configure(function() {
+    app.use(express.static(__dirname + "/public"));
+    app.use(express.urlencoded());
+    app.use(app.router);
+});
 
 //the username currently being handled
 var username;
