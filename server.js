@@ -50,6 +50,7 @@ var botName = "@UWBOT ";
 var otherBotName = "@BOT ";
 
 var login_page = 'login_05222014.jade';
+var main_page  = 'main_05222014.jade';
 
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
@@ -386,8 +387,7 @@ app.post("/main", function(req, res){
         username = req.body.username.trim();
         if (isValidString(username) && !usersListr[username]) {
             console.log(logStr() + "User logged in as '" + username + "'");
-            // res.render("main.jade", {"username" : username});
-            res.render("main_05222014.jade", {"username" : username});
+            res.render(main_page, {"username" : username});
 
         }
         else {
