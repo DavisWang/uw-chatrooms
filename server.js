@@ -8,21 +8,21 @@ var express = require("express"), app = express()
 
 var bot = require("uwcr-chatbot");
 
-io.enable('browser client minification'); // send minified client
-io.enable('browser client etag'); // apply etag caching logic based on version number
-io.enable('browser client gzip'); // gzip the file
-io.set("log level", 2);
-
 var jade = require("jade");
 
 app.set("views", __dirname + "/views");
 app.set("view engine", "jade");
 app.set("view options", { layout: false });
-app.configure(function() {
-    app.use(express.static(__dirname + "/public"));
-    app.use(express.urlencoded());
-    app.use(app.router);
-});
+
+app.use(express.static(__dirname + "/public"));
+app.use(express.urlencoded());
+app.use(express.cookieParser());
+app.use(app.router);
+
+io.enable('browser client minification'); // send minified client
+io.enable('browser client etag'); // apply etag caching logic based on version number
+io.enable('browser client gzip'); // gzip the file
+io.set("log level", 2);
 
 //the username currently being handled
 var username;
@@ -50,6 +50,9 @@ io.sockets.on("connection", function (socket) {
 
         //ensure username is valid
         if (!isValidString(username) || usersListr[username]) {
+            //TODO we need to make this description better, since usually, people enter proper names
+            //so we want to show unique constraint first, and there is a possibility of someone else taking
+            //your name when you have your cookie set, this will also result in the user getting this msg
             console.log(logStr() + "Kicking user: " + username + " due to duplicate/invalid username");
             socket.emit("kickClient", {"url" : "/error2"});
         }
@@ -371,6 +374,15 @@ app.post("/main", function(req, res){
     try {
         console.log(logStr() + "POST Request made to " + "/main");
         username = req.body.username.trim();
+
+        //cookie stuff
+        if(isValidString(username)) {
+            console.log(logStr() + "Setting cookie for username: " + username);
+            //set the cookie to be valid for 1 hour
+            res.cookie("uwcr", username, {maxAge: 60 * 60 * 1000});
+        }
+        //end cookie stuff
+
         if (isValidString(username) && !usersListr[username]) {
             console.log(logStr() + "User logged in as '" + username + "'");
             res.render("main.jade", {"username" : username});
@@ -405,8 +417,17 @@ app.get("/", function(req, res){
     if(req.headers["user-agent"] && req.headers["user-agent"] !== "Ruby") {
         console.log(logStr() + "GET Request made to " + "/");
         console.log("\tRequest headers: " + JSON.stringify(req.headers));
+
+        //try to get username from cookie header
+        if(req.headers.cookie && req.headers.cookie.split("=")[0] == "uwcr") {
+            var username = req.headers.cookie.split("=")[1];
+            console.log(logStr() + "Client has a cookie set, logging in as: " + username);
+            res.render("main.jade", {"username" : username});
+        }
+        else {
+            res.render("login.jade");
+        }
     }
-    res.render("login.jade");
 });
 
 app.get("/aboutus", function(req, res){
