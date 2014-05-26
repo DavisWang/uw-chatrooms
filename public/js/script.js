@@ -94,13 +94,13 @@ function addMessage(msg, roomName, username, other) {
       + time + '</span>' + '</div>');
 
     var roomChatEntries = $('div#chat-panel div#room-' + roomNameClass + ' div.chat-entries');
-    if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight()) < 200)) {
+    if (Math.abs((roomChatEntries[0].scrollHeight - roomChatEntries.scrollTop() - roomChatEntries.outerHeight())) < $("#chat-panel").height() + 200) {
         roomChatEntries.animate({
             scrollTop: roomChatEntries[0].scrollHeight
         }, 200);
     }
     else {
-        $('#more-msgs').filter(':hidden').fadeIn(1000).delay(3000).fadeOut(3000);
+        $('#more-msgs').filter(':hidden').fadeIn(500).delay(1500).fadeOut(500);
     }
 
     emojify.run(); //enable emojis
