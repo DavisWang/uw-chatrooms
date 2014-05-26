@@ -1,0 +1,12 @@
+$main-yellow: #F9D423;
+$main-yellow-shadow: #DEBD1F;
+
+$main-dark-gray: #777777;
+$main-dark-gray-shadow: #3A3636;
+$main-dark-gray-alt: #413D3D;
+
+@mixin box-shadow( $attrs ...){
+  box-shadow: $attrs;
+  -webkit-box-shadow: $attrs;
+  -moz-box-shadow: $attrs;
+}

@@ -14,6 +14,16 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "jade");
 app.set("view options", { layout: false });
 
+// Sass setup
+var sass = require("node-sass");
+
+app.use(sass.middleware({
+    src: __dirname + '/public/sass',
+    dest: __dirname + '/public',
+    debug: true,
+    outputStyle: 'compressed'
+}));
+
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded());
 app.use(express.cookieParser());
@@ -37,6 +47,9 @@ var publicRoomsList = ["Lobby"];
 
 var botName = "@UWBOT ";
 var otherBotName = "@BOT ";
+
+var login_page = 'login_05222014.jade';
+var main_page  = 'main_05222014.jade';
 
 //length of the usersList, JS makes it difficult to get the
 //length of a dictionary, so we just store a separate variable
@@ -385,31 +398,32 @@ app.post("/main", function(req, res){
 
         if (isValidString(username) && !usersListr[username]) {
             console.log(logStr() + "User logged in as '" + username + "'");
-            res.render("main.jade", {"username" : username});
+            res.render(main_page, {"username" : username});
+
         }
         else {
-            res.render("login.jade", {"usernameInvalid": true});
+            res.render(login_page, {"usernameInvalid": true});
         }
     } catch (err) {
         console.log(logStr() + err);
         //redirecting back to login page
-        res.render("login.jade");
+        res.render(login_page);
     }
 });
 
 app.get("/main", function(req, res){
     console.log(logStr() + "GET Request made to " + "/main");
-    res.render("login.jade");
+    res.render(login_page);
 });
 
 app.get("/error1", function(req, res){
     console.log(logStr() + "GET Request made to " + "/error1");
-    res.render("login.jade", {"serverRestart": true});
+    res.render(login_page, {"serverRestart": true});
 });
 
 app.get("/error2", function(req, res){
     console.log(logStr() + "GET Request made to " + "/error2");
-    res.render("login.jade", {"usernameInvalid": true});
+    res.render(login_page, {"usernameInvalid": true});
 });
 
 app.get("/", function(req, res){
@@ -422,10 +436,10 @@ app.get("/", function(req, res){
         if(req.headers.cookie && req.headers.cookie.split("=")[0] == "uwcr") {
             var username = req.headers.cookie.split("=")[1];
             console.log(logStr() + "Client has a cookie set, logging in as: " + username);
-            res.render("main.jade", {"username" : username});
+            res.render(main_page, {"username" : username});
         }
         else {
-            res.render("login.jade");
+            res.render(login_page);
         }
     }
 });
