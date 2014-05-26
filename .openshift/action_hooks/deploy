@@ -1,0 +1,7 @@
+echo "Executing pre_build script"
+cd $OPENSHIFT_REPO_DIR
+echo "Removing node_modules/uwcr-chatbot/"
+rm -r node_modules/uwcr-chatbot/
+echo "Installing newest version of chatbot"
+npm install .
+echo "Done"
