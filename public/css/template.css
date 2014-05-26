@@ -210,6 +210,10 @@ div#create-room-modal-invite-user-container {
   margin-bottom: 3px;
 }
 
+.nav-pills>li>a {
+  color: #5bc0de;
+}
+
 .nav-pills>li.active>a,
 .nav-pills>li.active>a:hover,
 .nav-pills>li.active>a:focus {
