@@ -11,7 +11,7 @@
     "socket.io": "~0.9.16",
     "express": "~3.4.8",
     "uwcr-chatbot": "git+https://git@github.com/DavisWang/uwcr-chatbot.git",
-    "node-sass": "~0.8.6"
+    "node-sass": "^0.8.6"
   },
   "devDependencies": {},
   "scripts": {
