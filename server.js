@@ -433,7 +433,7 @@ app.get("/", function(req, res){
         console.log("\tRequest headers: " + JSON.stringify(req.headers));
 
         //try to get username from cookie header
-        if(req.headers.cookie && req.headers.cookie.match(/\uwcr=([^;]+)/).length == 2) {
+        if(req.headers.cookie && req.headers.cookie.match(/\uwcr=([^;]+)/) && req.headers.cookie.match(/\uwcr=([^;]+)/).length == 2) {
             //from http://stackoverflow.com/questions/9556602/can-regex-matches-in-javascript-match-any-word-after-an-equal-operator
             var username = req.headers.cookie.match(/\uwcr=([^;]+)/)[1];
             console.log(logStr() + "Client has a cookie set, logging in as: " + username);
