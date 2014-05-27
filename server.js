@@ -20,7 +20,7 @@ var sass = require("node-sass");
 app.use(sass.middleware({
     src: __dirname + '/public/sass',
     dest: __dirname + '/public',
-    debug: true,
+    debug: false,
     outputStyle: 'compressed'
 }));
 
