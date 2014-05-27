@@ -392,7 +392,10 @@ app.post("/main", function(req, res){
         if(isValidString(username)) {
             console.log(logStr() + "Setting cookie for username: " + username);
             //set the cookie to be valid for 1 hour
+
+            res.cookie("test", "bar", {maxAge: 60 * 60 * 1000});
             res.cookie("uwcr", username, {maxAge: 60 * 60 * 1000});
+            res.cookie("test2", "foo", {maxAge: 60 * 60 * 1000});
         }
         //end cookie stuff
 
@@ -432,7 +435,7 @@ app.get("/", function(req, res){
         console.log("\tRequest headers: " + JSON.stringify(req.headers));
 
         //try to get username from cookie header
-        if(req.headers.cookie && req.headers.cookie.split("=")[0] == "uwcr") {
+        if(req.headers.cookie && req.headers.cookie.match(/\uwcr=([^;]+)/).length == 2) {
             //from http://stackoverflow.com/questions/9556602/can-regex-matches-in-javascript-match-any-word-after-an-equal-operator
             var username = req.headers.cookie.match(/\uwcr=([^;]+)/)[1];
             console.log(logStr() + "Client has a cookie set, logging in as: " + username);
