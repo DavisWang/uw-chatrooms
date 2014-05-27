@@ -442,6 +442,10 @@ app.get("/", function(req, res){
             res.render(login_page);
         }
     }
+    //this is here so haproxy would shut up about not getting a 2xx response
+    else {
+        res.render(login_page);
+    }
 });
 
 app.get("/aboutus", function(req, res){
