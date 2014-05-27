@@ -399,7 +399,6 @@ app.post("/main", function(req, res){
         if (isValidString(username) && !usersListr[username]) {
             console.log(logStr() + "User logged in as '" + username + "'");
             res.render(main_page, {"username" : username});
-
         }
         else {
             res.render(login_page, {"usernameInvalid": true});
@@ -434,7 +433,8 @@ app.get("/", function(req, res){
 
         //try to get username from cookie header
         if(req.headers.cookie && req.headers.cookie.split("=")[0] == "uwcr") {
-            var username = req.headers.cookie.split("=")[1];
+            //from http://stackoverflow.com/questions/9556602/can-regex-matches-in-javascript-match-any-word-after-an-equal-operator
+            var username = req.headers.cookie.match(/\uwcr=([^;]+)/)[1];
             console.log(logStr() + "Client has a cookie set, logging in as: " + username);
             res.render(main_page, {"username" : username});
         }
