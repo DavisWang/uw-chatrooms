@@ -391,11 +391,9 @@ app.post("/main", function(req, res){
         //cookie stuff
         if(isValidString(username)) {
             console.log(logStr() + "Setting cookie for username: " + username);
-            //set the cookie to be valid for 1 hour
 
-            res.cookie("test", "bar", {maxAge: 60 * 60 * 1000});
+            //set the cookie to be valid for 1 hour
             res.cookie("uwcr", username, {maxAge: 60 * 60 * 1000});
-            res.cookie("test2", "foo", {maxAge: 60 * 60 * 1000});
         }
         //end cookie stuff
 
