@@ -15,6 +15,8 @@ Davis Wang <davis@daviswang.com>
 
 Jason Chan <jason810118@gmail.com>
 
+James Cui <james.q.cui@gmail.com>
+
 License
 -------
 
