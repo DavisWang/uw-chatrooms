@@ -12,6 +12,7 @@ This is and always will be a work in progress, please email me at davis@daviswan
 Deploying:
 
 Install foreverjs @ https://github.com/foreverjs/forever
+
 On server, execute forever server.js > out.txt &
 
 Collaborators:
