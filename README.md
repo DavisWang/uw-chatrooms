@@ -9,6 +9,12 @@ I wrote this chat application for fun and to improve my programming skills. With
 
 This is and always will be a work in progress, please email me at davis@daviswang.com if you have any questions, comments, or if you'd like to submit a bug report.
 
+Deploying:
+
+Install foreverjs @ https://github.com/foreverjs/forever
+
+On server, execute forever server.js > out.txt &
+
 Collaborators:
 
 Davis Wang <davis@daviswang.com>
