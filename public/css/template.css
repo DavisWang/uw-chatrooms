@@ -68,8 +68,9 @@ div.num-connected, div#public-rooms-title, div#all-users-list-title {
 div#chat-controls {
   margin-top: 10px;
   margin-bottom: 10px;
-  /* position: absolute; This pushes the controls out of the container, apparently */
+  position: absolute;
   bottom: 10px;
+  width: 95%;
 }
 
 span.glyphicon-user, span.public-room-icon {
